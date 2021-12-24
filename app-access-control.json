@@ -1,0 +1,64 @@
+{
+  "_readme": [
+    "Update this file at AppAccessControl.com",
+    "Every account is assigned a version id (ver_*)",
+    "The values herein are dynamically generated based on version settings",
+    "Update this file after any settings are changed to implement the new environments",
+    "To offer version selection; Present versions filtered on the tag value",
+    "To assign user roles; Create checkboxes from data.[ver_*].roles and persist the selected role id(s) in an array",
+    "To check feature access; At least one of the user roles exists in data.[account.ver_*].access.[feature].[keys]",
+    "To check feature permission; At least one of the user roles has the required permission in data.[account.ver_*].access.[feature].[keys].[permissions]"
+  ],
+  "data": {
+    "permission_all": "PERMISSION_*",
+    "versions": {
+      "ver_MsUFntgzc8fNSPEu": {
+        "tag": "1.0",
+        "title": "App",
+        "desc": null,
+        "roles": {
+          "rol_CxcX5EkMvwUJDYyz": {
+            "title": "Super User",
+            "desc": "Can do anything."
+          },
+          "rol_AmDbfcMTvRrVnB6t": {
+            "title": "System Administrator",
+            "desc": "Can do almost anything."
+          },
+          "rol_ZASaTvWUgDPskCGh": {
+            "title": "CEO",
+            "desc": "Has read access to everything."
+          }
+        },
+        "access": {
+          "FEATURE_ACCESS": {
+            "rol_CxcX5EkMvwUJDYyz": [
+              "PERMISSION_*"
+            ]
+          },
+          "FEATURE_ACCOUNT": {
+            "rol_AmDbfcMTvRrVnB6t": [
+              "PERMISSION_UPDATE",
+              "PERMISSION_CREATE",
+              "PERMISSION_READ"
+            ],
+            "rol_CxcX5EkMvwUJDYyz": [
+              "PERMISSION_*"
+            ],
+            "rol_ZASaTvWUgDPskCGh": [
+              "PERMISSION_READ"
+            ]
+          },
+          "FEATURE_ACCOUNT_USERS": {
+            "rol_CxcX5EkMvwUJDYyz": [
+              "PERMISSION_*"
+            ],
+            "rol_AmDbfcMTvRrVnB6t": [
+              "PERMISSION_*"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
