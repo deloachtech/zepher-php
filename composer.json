@@ -1,0 +1,14 @@
+{
+  "name": "deloachtech/app-access-control",
+  "description": "Adds RBAC and versioning to an existing application.",
+  "type": "library",
+  "license": "proprietary",
+  "autoload": {
+    "psr-4": {
+      "DeLoachTech\\AppAccessControl\\": ""
+    }
+  },
+  "require": {
+    "php": ">=7.2"
+  }
+}
