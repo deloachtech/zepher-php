@@ -1,11 +1,25 @@
 <?php
+/**
+ * This class stores access data using the filesystem.
+ *
+ * You should use a database for storing access information. Create a
+ * persistence class and implement the PersistenceClassInterface provided.
+ * Pass your persistence class into the AppAccess constructor.
+ *
+ * If you decide to use the filesystem, do not upload the local version!!
+ */
 
-namespace DeLoachTech\AppAccessControl;
+namespace DeLoachTech\AppAccess;
 
-class FilesystemPersistence implements PersistenceInterface
+class FilesystemPersistence implements PersistenceClassInterface
 {
     private $persistenceFile;
 
+    public function setup($dataFile)
+    {
+        $info = pathinfo($dataFile);
+        $this->persistenceFile = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '') . $info['filename']  . '.accounts.json';
+    }
 
     public function getAccountVersionId($accountId): ?string
     {
@@ -28,9 +42,4 @@ class FilesystemPersistence implements PersistenceInterface
         return true;
     }
 
-    public function setDataFile($dataFile)
-    {
-        $info = pathinfo($dataFile);
-        $this->persistenceFile = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '') . $info['filename'] . '.' . 'access.json';
-    }
 }

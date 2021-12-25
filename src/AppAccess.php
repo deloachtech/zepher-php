@@ -1,10 +1,10 @@
 <?php
 
-namespace DeLoachTech\AppAccessControl;
+namespace DeLoachTech\AppAccess;
 
-class AppAccessControl
+class AppAccess
 {
-    private $config;
+    private $data;
     private $versionId;
     private $persistenceClass;
 
@@ -13,15 +13,15 @@ class AppAccessControl
         string $accountId,
         string $defaultVersionId,
         object $persistenceClass,
-        string $dataFile = __DIR__ . '/app-access-control.json'
+        string $dataFile = __DIR__ . '/app-access.json'
     )
     {
         if (file_exists($dataFile)) {
 
-            if ($persistenceClass instanceof PersistenceInterface) {
+            if ($persistenceClass instanceof PersistenceClassInterface) {
 
                 $this->persistenceClass = $persistenceClass;
-                $this->persistenceClass->setDataFile($dataFile);
+                $this->persistenceClass->setup($dataFile);
 
                 if(!$versionId = $persistenceClass->getAccountVersionId($accountId)){
                     $this->setAccountVersionId($accountId, $defaultVersionId);
@@ -29,15 +29,15 @@ class AppAccessControl
                 }
                 $this->versionId = $versionId;
 
-                $this->config = json_decode(file_get_contents($dataFile), true);
+                $this->data = json_decode(file_get_contents($dataFile), true);
 
             } else {
-                throw new \Exception('Persistence class must implement ' . __NAMESPACE__ . '/PersistenceInterface');
+                throw new \Exception('Persistence class must implement ' . __NAMESPACE__ . '/PersistenceClassInterface');
             }
 
 
         } else {
-            throw new \Exception('Unknown app access control config file ' . $dataFile);
+            throw new \Exception('Unknown app access control data file ' . $dataFile);
         }
     }
 
@@ -55,12 +55,12 @@ class AppAccessControl
 
     public function getVersion(string $id): array
     {
-        return $this->config['data']['versions'][$id] ?? [];
+        return $this->data['data']['versions'][$id] ?? [];
     }
 
     public function getAllRoles()
     {
-        $roles = $this->config['data']['versions'][$this->versionId]['roles'];
+        $roles = $this->data['data']['versions'][$this->versionId]['roles'];
         usort($roles, function ($item1, $item2) {
             return $item1['title'] <=> $item2['title'];
         });
@@ -71,7 +71,7 @@ class AppAccessControl
     {
         $a = [];
         foreach ($roleIds as $roleId) {
-            $a[$roleId] = $this->config['data']['versions'][$this->versionId]['roles'][$roleId]['title'] ?? null;
+            $a[$roleId] = $this->data['data']['versions'][$this->versionId]['roles'][$roleId]['title'] ?? null;
         }
         asort($a);
         return array_filter($a);
@@ -88,7 +88,7 @@ class AppAccessControl
     public function getTaggedVersions($tags, string $sortKey = 'tag'): array
     {
         $a = [];
-        foreach ($this->config['data']['versions'] ?? [] as $k => $v) {
+        foreach ($this->data['data']['versions'] ?? [] as $k => $v) {
             if (is_array($tags)) {
                 if (in_array($v['tag'], $tags)) {
                     $a[$k] = $v;
@@ -107,18 +107,18 @@ class AppAccessControl
 
     public function canRoleAccessFeature(string $feature, array $roles, string $permission = null): bool
     {
-        if (isset($this->config['data']['versions'][$this->versionId]['access'][$feature])) {
+        if (isset($this->data['data']['versions'][$this->versionId]['access'][$feature])) {
 
             if ($permission == null) {
                 // There's no permission set. Return true if the user has at least one of the roles.
-                return count(array_intersect(array_keys($this->config['data']['versions'][$this->versionId]['access'][$feature]), $roles ?? [])) > 0;
+                return count(array_intersect(array_keys($this->data['data']['versions'][$this->versionId]['access'][$feature]), $roles ?? [])) > 0;
             }
 
             foreach ($roles as $role) {
-                if (!empty($this->config['data']['versions'][$this->versionId]['access'][$feature][$role])) {
+                if (!empty($this->data['data']['versions'][$this->versionId]['access'][$feature][$role])) {
                     if (
-                        in_array($permission, $this->config['data']['versions'][$this->versionId]['access'][$feature][$role]) ||
-                        in_array($this->config['data']['permission_all'] ?? [], $this->config['data']['versions'][$this->versionId]['access'][$feature][$role])
+                        in_array($permission, $this->data['data']['versions'][$this->versionId]['access'][$feature][$role]) ||
+                        in_array($this->data['data']['permission_all'] ?? [], $this->data['data']['versions'][$this->versionId]['access'][$feature][$role])
                     ) {
                         return true;
                     }
@@ -130,9 +130,9 @@ class AppAccessControl
         return false;
     }
 
-    public function getConfig()
+    public function getData()
     {
-        return $this->config;
+        return $this->data;
     }
 
 }
