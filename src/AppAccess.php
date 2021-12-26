@@ -1,6 +1,12 @@
 <?php
-
+/**
+ * This class has to be generic enough to user in multiple frameworks.
+ * You can extend this class into a service and instantiate it there.
+ * Then use the service to access these methods and add functionality.
+ */
 namespace DeLoachTech\AppAccess;
+
+use Exception;
 
 class AppAccess
 {
@@ -9,8 +15,15 @@ class AppAccess
     private $persistenceClass;
 
 
+    /**
+     * @param mixed $accountId The active account id.
+     * @param string $defaultVersionId The default version id if the account has not been assigned one.
+     * @param object $persistenceClass Your class used to save account version information. (Must extend the PersistenceClassInterface)
+     * @param string $dataFile The file containing the JSON data from the remote service.
+     * @throws Exception
+     */
     public function __construct(
-        string $accountId,
+        $accountId,
         string $defaultVersionId,
         object $persistenceClass,
         string $dataFile = __DIR__ . '/app-access.json'
@@ -23,21 +36,23 @@ class AppAccess
                 $this->persistenceClass = $persistenceClass;
                 $this->persistenceClass->setup($dataFile);
 
-                if(!$versionId = $persistenceClass->getAccountVersionId($accountId)){
-                    $this->setAccountVersionId($accountId, $defaultVersionId);
-                    $versionId = $defaultVersionId;
+                if (!empty($accountId)) {
+
+                    if (!$versionId = $persistenceClass->getAccountVersionId($accountId)) {
+                        $this->setAccountVersionId($accountId, $defaultVersionId);
+                        $versionId = $defaultVersionId;
+                    }
+                    $this->versionId = $versionId;
                 }
-                $this->versionId = $versionId;
 
                 $this->data = json_decode(file_get_contents($dataFile), true);
 
             } else {
-                throw new \Exception('Persistence class must implement ' . __NAMESPACE__ . '/PersistenceClassInterface');
+                throw new Exception('Persistence class must implement ' . __NAMESPACE__ . '\PersistenceClassInterface');
             }
 
-
         } else {
-            throw new \Exception('Unknown app access control data file ' . $dataFile);
+            throw new Exception('Unknown app access control data file ' . $dataFile);
         }
     }
 

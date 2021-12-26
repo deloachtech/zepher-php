@@ -1,10 +1,10 @@
 <?php
 /**
- * This class stores access data using the filesystem.
+ * This class simply stores account access versions using the filesystem.
  *
- * You should use a database for storing access information. Create a
- * persistence class and implement the PersistenceClassInterface provided.
- * Pass your persistence class into the AppAccess constructor.
+ * You should use a database for this purpose by creating a persistence
+ * class implementing the PersistenceClassInterface provided. Pass your
+ * persistence class into the AppAccess constructor.
  *
  * If you decide to use the filesystem, do not upload the local version!!
  */
