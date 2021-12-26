@@ -3,6 +3,7 @@
  * This class has to be generic enough to user in multiple frameworks.
  * You can extend this class into a service and instantiate it there.
  * Then use the service to access these methods and add functionality.
+ * You can also use the service as the data persistence class!
  */
 namespace DeLoachTech\AppAccess;
 
@@ -34,15 +35,11 @@ class AppAccess
             if ($persistenceClass instanceof PersistenceClassInterface) {
 
                 $this->persistenceClass = $persistenceClass;
-                $this->persistenceClass->setup($dataFile);
+                $this->persistenceClass->setup($dataFile, $accountId, $defaultVersionId);
 
                 if (!empty($accountId)) {
 
-                    if (!$versionId = $persistenceClass->getAccountVersionId($accountId)) {
-                        $this->setAccountVersionId($accountId, $defaultVersionId);
-                        $versionId = $defaultVersionId;
-                    }
-                    $this->versionId = $versionId;
+                    $this->versionId = $this->getAccountVersionId($accountId) ?? $defaultVersionId;
                 }
 
                 $this->data = json_decode(file_get_contents($dataFile), true);
@@ -58,13 +55,15 @@ class AppAccess
 
     public function setAccountVersionId($accountId, string $versionId): bool
     {
-        return $this->persistenceClass->setAccountVersionId($accountId, $versionId);
+        if(!$this->persistenceClass->setVersionId($accountId, $versionId)) {
+            throw new Exception('Failed to set account access version id.');
+        }
 
     }
 
-    public function getAccountVersionId($accountId): string
+    public function getAccountVersionId($accountId): ?string
     {
-        return $this->persistenceClass->getAccountVersionId($accountId);
+        return $this->persistenceClass->getVersionId($accountId);
     }
 
 

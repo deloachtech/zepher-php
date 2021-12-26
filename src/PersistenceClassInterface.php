@@ -5,27 +5,29 @@ namespace DeLoachTech\AppAccess;
 interface PersistenceClassInterface
 {
     /**
-     * Gets called early in the process and passes information to the persistence class for use.
-     * @param string $dataFile The data file path amd file name.
+     * Gets called early in the process and passes convenience information to the persistence class for use.
+     * @param string $dataFile The data file path and file name.
+     * @param mixed $accountId The current account id (if any).
+     * @param string $defaultVersionId The default version id passed in the access class constructor.
      */
-    public function setup(string $dataFile);
+    public function setup(string $dataFile, $accountId, string $defaultVersionId);
 
 
     /**
-     * Your job is to return the current account ID.
+     * Your job is to return the current account id.
      * @param mixed $accountId
      * @return string|null
      */
-    public function getAccountVersionId($accountId): ?string;
+    public function getVersionId($accountId): ?string;
 
 
     /**
-     * Your job is to store the version ID using the arguments provided.
-     * @param mixed $accountId The active account ID
-     * @param string $versionId The active account access version ID
+     * Your job is to store the version id using the arguments provided and return a bool.
+     * @param mixed $accountId The active account id.
+     * @param string $versionId The active account access version id.
      * @return bool
      */
-    public function setAccountVersionId($accountId, string $versionId): bool;
+    public function setVersionId($accountId, string $versionId): bool;
 
 
 }

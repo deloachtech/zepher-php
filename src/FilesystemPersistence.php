@@ -14,23 +14,35 @@ namespace DeLoachTech\AppAccess;
 class FilesystemPersistence implements PersistenceClassInterface
 {
     private $persistenceFile;
+    private $defaultVersionId;
 
-    public function setup($dataFile)
+    public function setup(string $dataFile, $accountId, string $defaultVersionId)
     {
         $info = pathinfo($dataFile);
         $this->persistenceFile = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '') . $info['filename']  . '.accounts.json';
+        $this->defaultVersionId = $defaultVersionId;
     }
 
-    public function getAccountVersionId($accountId): ?string
+    public function getVersionId($accountId): ?string
     {
-        $data = [];
+        $versionId = $this->defaultVersionId;
+        $setVersionId = true;
+
         if(file_exists($this->persistenceFile)) {
             $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
+            if(!empty($data[$accountId])){
+                $setVersionId = false;
+                $versionId = $data[$accountId];
+            }
         }
-        return $data[$accountId] ?? null;
+
+        if($setVersionId == true){
+            $this->setVersionId($accountId, $versionId);
+        }
+        return $versionId;
     }
 
-    public function setAccountVersionId($accountId, string $versionId): bool
+    public function setVersionId($accountId, string $versionId): bool
     {
         if (file_exists($this->persistenceFile)) {
             $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
