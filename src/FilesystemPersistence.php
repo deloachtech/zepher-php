@@ -9,7 +9,7 @@
  * If you decide to use the filesystem, do not upload the local version!!
  */
 
-namespace DeLoachTech\AppAccess;
+namespace DeLoachTech\Zepher;
 
 class FilesystemPersistence implements PersistenceClassInterface
 {

@@ -5,11 +5,11 @@
  * Then use the service to access these methods and add functionality.
  * You can also use the service as the data persistence class!
  */
-namespace DeLoachTech\AppAccess;
+namespace DeLoachTech\Zepher;
 
 use Exception;
 
-class AppAccess
+class Zepher
 {
     private $data;
     private $versionId;
@@ -49,7 +49,7 @@ class AppAccess
             }
 
         } else {
-            throw new Exception('Unknown app access control data file ' . $dataFile);
+            throw new Exception('Unknown app zepher data file ' . $dataFile);
         }
     }
 

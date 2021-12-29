@@ -1,11 +1,11 @@
 {
-  "name": "deloachtech/app-access",
-  "description": "Adds RBAC and app versioning to an existing application.",
+  "name": "deloachtech/zepher",
+  "description": "Adds SaaS versioning and RBAC to an existing application codebase.",
   "type": "library",
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "DeLoachTech\\AppAccess\\": "src/"
+      "DeLoachTech\\Zepher\\": "src/"
     }
   },
   "require": {

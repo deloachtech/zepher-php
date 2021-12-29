@@ -1,6 +1,6 @@
 <?php
 
-namespace DeLoachTech\AppAccess;
+namespace DeLoachTech\Zepher;
 
 interface PersistenceClassInterface
 {
