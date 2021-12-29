@@ -1,6 +1,5 @@
-# App Access
+# Zepher
 
-Manage Role Based Access Control (RBAC) and app versioning (e.g. Basic, Advanced, Enterprise) for multiple applications.
-
+Add SaaS versioning (e.g. Basic, Advanced, Enterprise) to an existing codebase. (Or just use Zepher for extremely easy RBAC.)
 
 
