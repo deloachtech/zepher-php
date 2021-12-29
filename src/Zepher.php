@@ -20,36 +20,36 @@ class Zepher
      * @param mixed $accountId The active account id.
      * @param string $defaultVersionId The default version id if the account has not been assigned one.
      * @param object $persistenceClass Your class used to save account version information. (Must extend the PersistenceClassInterface)
-     * @param string $dataFile The file containing the JSON data from the remote service.
+     * @param string $configFile The file containing the JSON data from the remote service. (Usually zepher.json)
      * @throws Exception
      */
     public function __construct(
         $accountId,
         string $defaultVersionId,
         object $persistenceClass,
-        string $dataFile = __DIR__ . '/app-access.json'
+        string $configFile = __DIR__ . '/zepher.json'
     )
     {
-        if (file_exists($dataFile)) {
+        if (file_exists($configFile)) {
 
             if ($persistenceClass instanceof PersistenceClassInterface) {
 
                 $this->persistenceClass = $persistenceClass;
-                $this->persistenceClass->setup($dataFile, $accountId, $defaultVersionId);
+                $this->persistenceClass->setup($configFile, $accountId, $defaultVersionId);
 
                 if (!empty($accountId)) {
 
                     $this->versionId = $this->getAccountVersionId($accountId) ?? $defaultVersionId;
                 }
 
-                $this->data = json_decode(file_get_contents($dataFile), true);
+                $this->data = json_decode(file_get_contents($configFile), true);
 
             } else {
                 throw new Exception('Persistence class must implement ' . __NAMESPACE__ . '\PersistenceClassInterface');
             }
 
         } else {
-            throw new Exception('Unknown app zepher data file ' . $dataFile);
+            throw new Exception('Unknown zepher config file ' . $configFile);
         }
     }
 
