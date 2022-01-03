@@ -14,32 +14,20 @@ namespace DeLoachTech\Zepher;
 class FilesystemPersistence implements PersistenceClassInterface
 {
     private $persistenceFile;
-    private $defaultVersionId;
 
-    public function setup(string $dataFile, $accountId, string $defaultVersionId)
+    public function setup(string $configFile, $accountId, ?string $domainId)
     {
-        $info = pathinfo($dataFile);
-        $this->persistenceFile = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '') . $info['filename']  . '.accounts.json';
-        $this->defaultVersionId = $defaultVersionId;
+        $info = pathinfo($configFile);
+        $this->persistenceFile = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '') . $info['filename'] . '.accounts.json';
     }
 
     public function getVersionId($accountId): ?string
     {
-        $versionId = $this->defaultVersionId;
-        $setVersionId = true;
-
-        if(file_exists($this->persistenceFile)) {
+        if (file_exists($this->persistenceFile)) {
             $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
-            if(!empty($data[$accountId])){
-                $setVersionId = false;
-                $versionId = $data[$accountId];
-            }
+            return $data[$accountId] ?? null;
         }
-
-        if($setVersionId == true){
-            $this->setVersionId($accountId, $versionId);
-        }
-        return $versionId;
+        return null;
     }
 
     public function setVersionId($accountId, string $versionId): bool

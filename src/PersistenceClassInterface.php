@@ -6,15 +6,15 @@ interface PersistenceClassInterface
 {
     /**
      * Gets called early in the process and passes convenience information to the persistence class for use.
-     * @param string $dataFile The data file path and file name.
+     * @param string $configFile The zepher config file being used.
      * @param mixed $accountId The current account id (if any).
-     * @param string $defaultVersionId The default version id passed in the access class constructor.
+     * @param mixed $domainId The current domain id.
      */
-    public function setup(string $dataFile, $accountId, string $defaultVersionId);
+    public function setup(string $configFile, $accountId, ?string $domainId);
 
 
     /**
-     * Your job is to return the current account id.
+     * Your job is to return the current account version id.
      * @param mixed $accountId
      * @return string|null
      */
