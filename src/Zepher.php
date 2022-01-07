@@ -227,7 +227,7 @@ class Zepher
      * @param string|null $permission
      * @return bool
      */
-    public function canUserAccessFeature(string $feature, array $userRoles, string $permission = null): bool
+    public function userCanAccess(string $feature, array $userRoles, string $permission = null): bool
     {
         if (isset($this->config['data']['versions'][$this->versionId]['access'][$feature])) {
 
