@@ -22,18 +22,18 @@ class Zepher
      * @param mixed $accountId The active account id (if any).
      * @param mixed $domainId The current account domain id.
      * @param object $persistenceClass Your class used to save account version information. (Must extend the PersistenceClassInterface)
-     * @param string $configFile The file containing the JSON data from the remote service. (Usually zepher.json). You can have a developer version by naming it *_dev.json (e.g. zepher_dev.json). Don't commit/upload the *_dev.json file!
+     * @param string $configFileDirectory The directory (without the trailing slash) where your zepher.json and zepher_dev.json files exist.
      * @throws Exception
      */
     public function __construct(
         $accountId,
         ?string $domainId,
         object $persistenceClass,
-        string $configFile = __DIR__ . '/zepher.json'
+        string $configFileDirectory = __DIR__
     )
     {
-        $info = pathinfo($configFile);
-        $devFile = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '') . $info['filename'] . '_dev.json';
+        $configFile = $configFileDirectory . '/zepher.json';
+        $devFile = $configFileDirectory . '/zepher_dev.json';
 
         if (file_exists($devFile)) {
             $configFile = $devFile;
@@ -82,7 +82,7 @@ class Zepher
 
 
     /**
-     * Returns the default version id for the current domain, or the domain id provided.
+     * Returns the default version id for the current domain (or the domain id provided).
      * @return false|mixed
      */
     public function getDomainDefaultVersionId(string $domainId = null)
