@@ -82,12 +82,12 @@ class Zepher
 
 
     /**
-     * Returns the default version for the current domain.
+     * Returns the default version id for the current domain, or the domain id provided.
      * @return false|mixed
      */
-    public function getDefaultDomainVersionId()
+    public function getDomainDefaultVersionId(string $domainId = null)
     {
-        return reset($this->config['data']['domains'][$this->domainId]['versions']); // The first version is the default
+        return reset($this->config['data']['domains'][$domainId ?? $this->domainId]['versions']); // The first version is the default
     }
 
 
