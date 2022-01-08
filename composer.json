@@ -1,6 +1,6 @@
 {
   "name": "deloachtech/zepher",
-  "description": "Add SaaS versioning (e.g. Basic, Advanced, Enterprise) to an existing codebase. (Or just use Zepher for extremely easy RBAC.)",
+  "description": "Domain and user access control for your codebase.",
   "type": "library",
   "license": "MIT",
   "autoload": {

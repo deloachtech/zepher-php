@@ -6,7 +6,7 @@ interface PersistenceClassInterface
 {
     /**
      * Gets called early in the process and passes convenience information to the persistence class for use.
-     * @param string $configFile The zepher config file being used.
+     * @param string $configFile The zepher.json file.
      * @param mixed $accountId The current account id (if any).
      * @param mixed $domainId The current domain id.
      */
