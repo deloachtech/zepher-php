@@ -32,7 +32,7 @@ This is the `PHP` version of the `zepher.json` object file processor.
 
 You can install it via composer:
 
-    composer/require deloachtech/zepher
+    composer require deloachtech/zepher
 
 Or download the package at https://github.com/deloachtech/zepher.
 
