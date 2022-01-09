@@ -24,7 +24,7 @@ See https://zepher.io for more information.
 
 An account at https://zepher.io where you define requirements and download the object file. 
 
-##Installation
+## Installation
 
 Zepher compiles information into a universal `zepher.json` object file for processing in any language. (You can roll your own processor.) 
 
@@ -36,7 +36,7 @@ You can install it via composer:
 
 Or download the package at https://github.com/deloachtech/zepher.
 
-##Usage
+## Usage
 
 There are three variables from the` zepher.json` file for assignment (using your existing codebase logic).
 
