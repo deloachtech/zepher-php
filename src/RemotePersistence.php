@@ -9,7 +9,7 @@
  * The cache refreshes every hour.
  *
  * The difference between this and filesystem persistence is the data
- * integrity. If the filesystem file is lost, so is the every accounts'
+ * integrity. If the filesystem file is lost, so is *every* accounts'
  * data.
  *
  * You should exclude the cache file in your deployment strategy.
