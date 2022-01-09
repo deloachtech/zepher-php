@@ -16,7 +16,7 @@ You define everything at `zepher.io` and download the compiled `zepher.json` fil
         // User with a role and the permission specified has access to the feature.
     }
 
-The logic above will enforce role _and_ versioning restrictions.
+**The logic above will enforce role _and_ versioning restrictions.**
 
 See https://zepher.io for more information.
 
