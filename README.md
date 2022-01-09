@@ -38,7 +38,7 @@ Or download the package at https://github.com/deloachtech/zepher.
 
 ## Usage
 
-There are three variables from the` zepher.json` file for assignment (using your existing codebase logic).
+There are three variables from the `zepher.json` file for assignment (using your existing codebase logic).
 
 1. Your accounts are assigned a domain (e.g. Bank, Hospital).
 2. Your accounts are assigned (select) a domain version (e.g. Basic, Plus, Premium).
@@ -49,14 +49,18 @@ Instantiate the Zepher class and begin. Different data persistence classes are p
 
     $zepher = new Zepher($accountId, $domainId, new FilesystemPersistenceClass(), $configDir);
 
+
     // To offer domain version selection
     $versions = $zepher->getDomainVersions();
+
 
     // Or during signup
     $versions = $zepher->getSignupDomains();
 
+
     // To assign user roles
     $roles = $zepher->getRoles();
+
 
     // To enforce everything (RBAC and domain versioning)
     if($zepher->userCanAccess('SOME_FEATURE', $userRoles, 'SOME_PERMISSION')){
