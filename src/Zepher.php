@@ -56,7 +56,9 @@ class Zepher
 
             if (isset($accountId)) {
                 if (!$this->versionId = $this->getAccountVersionId($accountId)) {
-                    $this->versionId = reset($this->config['data']['domains'][$domainId]['versions']); // The first version is the default
+
+                    // The account does not yet have a version assigned, so set the default. (The first of the sorted domain versions.)
+                    $this->versionId = reset($this->config['data']['domains'][$domainId]['versions']);
                     $this->setAccountVersionId($accountId, $this->versionId);
                 }
             }
