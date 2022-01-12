@@ -22,10 +22,15 @@ interface PersistenceClassInterface
 
 
     /**
-     * Your job is to store the version id using the arguments provided and return a bool.
+     * Your job is to store the version id using the arguments provided and return indicating success.
+     *
+     * Note: If you're going to use the FeeProcessor, there are required values you need to incorporate
+     * or map into your persistence record schema. See the FeeProcessorInterface getOpenRecords() method
+     * for more information.
+     *
      * @param mixed $accountId The active account id.
      * @param string $versionId The active account access version id.
-     * @return bool
+     * @return bool If false, the current processing will stop and an exception will be thrown.
      */
     public function setVersionId($accountId, string $versionId): bool;
 

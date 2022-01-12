@@ -14,14 +14,12 @@ namespace DeLoachTech\Zepher;
 class FilesystemPersistence implements PersistenceClassInterface
 {
     private $persistenceFile;
-    private $historyFile;
 
     public function setup(string $configFile, $accountId, ?string $domainId)
     {
         $info = pathinfo($configFile);
         $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
         $this->persistenceFile = $dir . $info['filename'] . '.accounts.json';
-        $this->historyFile = $dir . $info['filename'] . '.log';
     }
 
     public function getVersionId($accountId): ?string
@@ -42,15 +40,7 @@ class FilesystemPersistence implements PersistenceClassInterface
         if (file_put_contents($this->persistenceFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
             return false;
         }
-
-        $this->updateHistory($accountId, $versionId);
-
         return true;
-    }
-
-    private function updateHistory($accountId, string $versionId)
-    {
-        file_put_contents($this->historyFile, time() . "|{$accountId}|{$versionId}\n", FILE_APPEND);
     }
 
 }

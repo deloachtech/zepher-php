@@ -62,7 +62,6 @@ class Zepher
                     $this->setAccountVersionId($accountId, $this->versionId);
                 }
             }
-
         } else {
             throw new Exception('Persistence class must implement ' . __NAMESPACE__ . '\PersistenceClassInterface');
         }
@@ -76,7 +75,7 @@ class Zepher
     public function getDomainVersions(): array
     {
         $versions = [];
-        foreach ($this->config['data']['domains'][$this->domainId]['versions'] as $tag => $id) {
+        foreach ($this->config['data']['domains'][$this->domainId]['versions'] as $id) {
             $versions[] = $this->config['data']['versions'][$id];
         }
         return $versions;
@@ -99,7 +98,15 @@ class Zepher
      */
     public function getSignupDomains(): array
     {
-        return $this->config['data']['signup']['domains'] ?? [];
+        $signupDomains = [];
+        $domains = $this->config['data']['domains'] ?? [];
+
+        foreach ($domains as $id => $v) {
+            if ($v['signup'] == true) {
+                $signupDomains[$id] = $v;
+            }
+        }
+        return $signupDomains;
     }
 
 
@@ -162,12 +169,16 @@ class Zepher
 
 
     /**
-     * Returns roles for the current version.
+     * Returns roles for the current version. Useful for providing
+     * a list of roles to select from when managing users.
      * @return array
      */
     public function getRoles(): array
     {
-        $roles = $this->config['data']['versions'][$this->versionId]['roles'] ?? [];
+        $roles = [];
+        foreach ($this->config['data']['versions'][$this->versionId]['roles'] ?? [] as $id) {
+            $roles[] = $this->config['data']['roles'][$id];
+        }
         usort($roles, function ($item1, $item2) {
             return $item1['title'] <=> $item2['title'];
         });
@@ -176,25 +187,33 @@ class Zepher
 
 
     /**
-     * Returns role titles for the provided ids, sorted by title.
+     * Returns role titles for the provided ids, sorted by title. Useful
+     * for providing a list of the roles a user is currently assigned.
      * @param array $roleIds
      * @return array [id => title]
      */
     public function getRolesById(array $roleIds): array
     {
-        $a = [];
+        $roles = [];
         foreach ($roleIds as $roleId) {
-            $a[$roleId] = $this->config['data']['versions'][$this->versionId]['roles'][$roleId]['title'] ?? null;
+            if (isset($this->config['data']['version'][$this->versionId]['roles'][$roleId])) {
+                $roles[$roleId] = $this->config['data']['roles'][$roleId];
+            }
         }
-        asort($a);
-        return array_filter($a);
+        asort($roles);
+        return $roles;
     }
 
 
     /**
      * Returns an array of versions matching $tags sorted by $sortKey.
-     * If $tags is an array, in_array() is used against version tag.
-     * If $tags is a string, fnmatch() is used against version tag permitting wildcards.
+     * If $tags is an array, in_array() is used against version tag. If
+     * $tags is a string, fnmatch() is used against version tag permitting
+     * wildcards.
+     *
+     * This is a convenience method. It was used in earlier data structures
+     * (before domains were introduced). There might be a use case for it.
+     *
      * @param mixed $tags
      * @param string $sortKey Default is 'tag'
      * @return array
@@ -223,7 +242,7 @@ class Zepher
     /**
      * Returns a bool indicating if the user has access to the feature with optional permission.
      * If no permission is provided, the method will return true if the user has at least one of
-     * the roles associated with the fature.
+     * the roles associated with the feature.
      * @param string $feature
      * @param array $userRoles
      * @param string|null $permission
@@ -231,25 +250,26 @@ class Zepher
      */
     public function userCanAccess(string $feature, array $userRoles, string $permission = null): bool
     {
-        if (isset($this->config['data']['versions'][$this->versionId]['access'][$feature])) {
+        // TODO: Replace in_array() usage with more efficient logic. (This method is frequently called.)
+
+        if (in_array($feature, $this->config['data']['versions'][$this->versionId]['features'])) {
 
             if ($permission == null) {
+
                 // There's no permission set. Return true if the user has at least one of the roles.
-                return count(array_intersect(array_keys($this->config['data']['versions'][$this->versionId]['access'][$feature]), $userRoles ?? [])) > 0;
+                return count(array_intersect(array_keys($this->config['data']['access'][$feature]), $userRoles ?? [])) > 0;
             }
 
             foreach ($userRoles as $role) {
-                if (!empty($this->config['data']['versions'][$this->versionId]['access'][$feature][$role])) {
+                if (!empty($this->config['data']['access'][$feature][$role])) {
                     if (
-                        in_array($permission, $this->config['data']['versions'][$this->versionId]['access'][$feature][$role]) ||
-                        in_array($this->config['data']['permission_all'] ?? [], $this->config['data']['versions'][$this->versionId]['access'][$feature][$role])
+                        in_array($permission, $this->config['data']['access'][$feature][$role]) ||
+                        in_array($this->config['data']['app']['permission_all'] ?? [], $this->config['data']['access'][$feature][$role])
                     ) {
                         return true;
                     }
                 }
             }
-        } else {
-            //file_put_contents($this->errorFile, 'Unknown feature ' . $feature . "\n", FILE_APPEND);
         }
         return false;
     }

@@ -1,10 +1,10 @@
 <?php
 /**
- * This class remotely stores account access versions (and metadata).
+ * This class remotely stores account access data.
  *
- * An account will RARELY (if ever) change their access version, yet
- * the value is required on each request. Therefore, this class caches
- * remote results until the account changes their version.
+ * Most accounts will rarely change their access version, yet the value
+ * is required on each request. This class caches the remotely stored
+ * version id until the account changes their version.
  *
  * The cache refreshes every hour.
  *
