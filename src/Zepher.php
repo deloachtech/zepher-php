@@ -274,4 +274,15 @@ class Zepher
         return false;
     }
 
+
+    /**
+     * Method for determining if a module is active in the current environment.
+     * @param string $moduleId
+     * @return bool
+     */
+    public function moduleIsActive(string $moduleId): bool
+    {
+        return in_array($moduleId,$this->config['data']['versions'][$this->versionId]['modules']);
+    }
+
 }
