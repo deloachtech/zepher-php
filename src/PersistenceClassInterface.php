@@ -4,35 +4,28 @@ namespace DeLoachTech\Zepher;
 
 interface PersistenceClassInterface
 {
-    /**
-     * Gets called early in the process and passes convenience information to the persistence class for use.
-     * @param string $configFile The zepher.json file.
-     * @param mixed $accountId The current account id (if any).
-     * @param mixed $domainId The current domain id.
-     */
-    public function setup(string $configFile, $accountId, ?string $domainId);
-
 
     /**
-     * Your job is to return the current account version id.
-     * @param mixed $accountId
-     * @return string|null
-     */
-    public function getVersionId($accountId): ?string;
-
-
-    /**
-     * Your job is to store the version id using the arguments provided and return indicating success.
+     * The current config file being used. (In case you need it.)
      *
-     * Note: If you're going to use the FeeProcessor, there are required values you need to incorporate
-     * or map into your persistence record schema. See the FeeProcessorInterface getOpenRecords() method
-     * for more information.
-     *
-     * @param mixed $accountId The active account id.
-     * @param string $versionId The active account access version id.
-     * @return bool If false, the current processing will stop and an exception will be thrown.
+     * @param $configFile
      */
-    public function setVersionId($accountId, string $versionId): bool;
+    public function configFile($configFile);
 
+
+    /**
+     * Your job is to set all the current object values from your data storage. (The account id is already set in the VO.)
+     *
+     * @param AccessValueObject $accessValueObject
+     */
+    public function getAccessValues(AccessValueObject $accessValueObject);
+
+
+    /**
+     * Your job is to save the value object values and return a bool indicating success.
+     *
+     * @param AccessValueObject $accessValueObject
+     */
+    public function setAccessValues(AccessValueObject $accessValueObject): bool;
 
 }

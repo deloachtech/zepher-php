@@ -2,15 +2,13 @@
 /**
  * This class remotely stores account access data.
  *
- * Most accounts will rarely change their access version, yet the value
- * is required on each request. This class caches the remotely stored
- * version id until the account changes their version.
+ * Most accounts will rarely change their access version, yet the value is required on each request. This class caches
+ * the remotely stored version data until the account changes their version.
  *
  * The cache refreshes every hour.
  *
- * The difference between this and filesystem persistence is the data
- * integrity. If the filesystem file is lost, so is *every* accounts'
- * data.
+ * The difference between this and filesystem persistence is the data integrity. If the filesystem file is lost, so is
+ * the data for *every* account, resulting in each account being re-assigned the default version.
  *
  * You should exclude the cache file in your deployment strategy.
  */
@@ -23,7 +21,7 @@ class RemotePersistence implements PersistenceClassInterface
     private $config;
     private $apiKey;
     private $cache;
-    private $refresh = 60*60; // Every hour
+    private $refresh = 60 * 60; // Every hour
 
 
     public function __construct(string $apiKey)
@@ -33,40 +31,65 @@ class RemotePersistence implements PersistenceClassInterface
         $this->refreshCache();
     }
 
-    public function setup(string $configFile, $accountId, ?string $domainId)
+    public function configFile($configFile)
     {
         $this->config = json_decode(file_get_contents($configFile) ?? [], true);
     }
 
-
-    public function getVersionId($accountId): ?string
+    public function getAccessValues(AccessValueObject $accessValueObject)
     {
-        if ($versionId = $this->getCachedVersion($accountId)) {
-            return $versionId;
-        }
+        if ($data = $this->getCachedValues($accessValueObject->getAccountId())) {
+            $accessValueObject
+                ->setVersionId($data['version_id'])
+                ->setActivated($data['activated'])
+                ->setLastProcess($data['last_process'])
+                ->setClosed($data['closed']);
 
-        $url = "https://app.zepher.io/api/apps/{$this->config['data']['app']['id']}/accounts/{$accountId}/versions";
-        $response = $this->curl($url, null);
+        } else {
 
-        if ($response['data']['id']) {
-            $this->setCachedVersion($accountId, $response['data']['id']);
+            $url = "https://app.zepher.io/api/apps/{$this->config['data']['app']['id']}/accounts/{$accessValueObject->getAccountId()}/versions";
+            $response = $this->curl($url, null);
+
+            if ($data = $response['data']) {
+                $accessValueObject
+                    ->setVersionId($data['version_id'])
+                    ->setActivated($data['activated'])
+                    ->setLastProcess($data['last_process'])
+                    ->setClosed($data['closed']);
+
+                $this->setCachedValues($accessValueObject);
+            }
         }
-        return $response['data']['id'] ?? null;
     }
 
-    public function setVersionId($accountId, string $versionId): bool
+    public function setAccessValues(AccessValueObject $accessValueObject): bool
     {
-        $url = "https://app.zepher.io/api/apps/{$this->config['data']['app']['id']}/accounts/{$accountId}/versions";
-        $response = $this->curl($url, ['id' => $versionId]);
-        if (!empty($response['data']['id'])) {
-            $this->setCachedVersion($accountId, $versionId);
+        $url = "https://app.zepher.io/api/apps/{$this->config['data']['app']['id']}/accounts/{$accessValueObject->getAccountId()}/versions";
+
+        $response = $this->curl($url, [
+            'account_id' => $accessValueObject->getAccountId(),
+            'version_id' => $accessValueObject->getVersionId(),
+            'activated' => $accessValueObject->getActivated(),
+            'last_process' => $accessValueObject->getLastProcess(),
+            'closed' => $accessValueObject->getClosed()
+        ]);
+
+        if ($data = $response['data']) {
+            $accessValueObject
+                ->setVersionId($data['version_id'])
+                ->setActivated($data['activated'])
+                ->setLastProcess($data['last_process'])
+                ->setClosed($data['closed']??null);
+
+            $this->setCachedValues($accessValueObject);
+
             return true;
         }
         return false;
     }
 
 
-    private function getCachedVersion($accountId)
+    private function getCachedValues($accountId): ?array
     {
         $cache = [];
         if (file_exists($this->cache)) {
@@ -76,13 +99,18 @@ class RemotePersistence implements PersistenceClassInterface
     }
 
 
-    private function setCachedVersion($accountId, string $versionId)
+    private function setCachedValues(AccessValueObject $accessValueObject)
     {
         $cache = [];
         if (file_exists($this->cache)) {
             $cache = unserialize(file_get_contents($this->cache)) ?? [];
         }
-        $cache[$accountId] = $versionId;
+        $cache[$accessValueObject->getAccountId()] = [
+            'version_id' => $accessValueObject->getVersionId(),
+            'activated' => $accessValueObject->getActivated(),
+            'last_process' => $accessValueObject->getLastProcess(),
+            'closed' => $accessValueObject->getClosed()
+        ];
         file_put_contents($this->cache, serialize($cache));
     }
 

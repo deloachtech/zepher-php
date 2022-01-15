@@ -1,9 +1,11 @@
 <?php
 /**
- * This class has to be generic enough to user in multiple frameworks.
- * You can extend this class into a service and instantiate it there.
- * Then use the service to access these methods and add functionality.
- * You can also use the service as the data persistence class.
+ * The zepher.json data processing class.
+ *
+ * Although fully functional, this class is provided to get things started. You can roll your own, or extend this one
+ * into a service and add/modify functionality. (If you extend into a service, you can also use the service as the data
+ * persistence class.)
+ *
  */
 
 namespace DeLoachTech\Zepher;
@@ -13,16 +15,18 @@ use Exception;
 class Zepher
 {
     protected $config;
-    protected $versionId;
     protected $domainId;
+    protected $accessValueObject;
 
     private $persistenceClass;
 
     /**
      * @param mixed $accountId The active account id (if any).
-     * @param mixed $domainId The current account domain id.
-     * @param object $persistenceClass Your class used to save account version information. (Must extend the PersistenceClassInterface)
-     * @param string $configFileDirectory The directory (without the trailing slash) where your zepher.json and/or zepher_dev.json files exist.
+     * @param mixed $domainId The current domain id.
+     * @param object $persistenceClass Your class used to save account version information. (Must extend the
+     * PersistenceClassInterface)
+     * @param string $configFileDirectory The directory (without the trailing slash) where your zepher.json and/or
+     * zepher_dev.json files exist.
      * @throws Exception
      */
     public function __construct(
@@ -44,7 +48,7 @@ class Zepher
         if ($persistenceClass instanceof PersistenceClassInterface) {
 
             $this->persistenceClass = $persistenceClass;
-            $this->persistenceClass->setup($configFile, $accountId, $domainId);
+            $this->persistenceClass->configFile($configFile);
 
             $this->domainId = $domainId;
 
@@ -55,11 +59,18 @@ class Zepher
             }
 
             if (isset($accountId)) {
-                if (!$this->versionId = $this->getAccountVersionId($accountId)) {
 
-                    // The account does not yet have a version assigned, so set the default. (The first of the sorted domain versions.)
-                    $this->versionId = reset($this->config['data']['domains'][$domainId]['versions']);
-                    $this->setAccountVersionId($accountId, $this->versionId);
+                $this->accessValueObject = new AccessValueObject($accountId);
+                $persistenceClass->getAccessValues($this->accessValueObject);
+
+                if ($this->accessValueObject->getVersionId() == null) {
+
+                    // The account does not yet have a version assigned, so set the default.
+                    $this->accessValueObject
+                        ->setVersionId($this->getDomainDefaultVersionId($domainId))
+                        ->setActivated(time());
+
+                    $this->updateValueObject($this->accessValueObject);
                 }
             }
         } else {
@@ -70,6 +81,7 @@ class Zepher
 
     /**
      * Returns an array of versions for current domain.
+     *
      * @return array
      */
     public function getDomainVersions(): array
@@ -83,17 +95,20 @@ class Zepher
 
 
     /**
-     * Returns the default version id for the current domain (or the domain id provided).
+     * Returns the default version id for the current domain (or the domain id provided). The default version is the first
+     * version in a group of versions (index 0).
+     *
      * @return false|mixed
      */
     public function getDomainDefaultVersionId(string $domainId = null)
     {
-        return reset($this->config['data']['domains'][$domainId ?? $this->domainId]['versions']); // The first version is the default
+        return reset($this->config['data']['domains'][$domainId ?? $this->domainId]['versions']);
     }
 
 
     /**
      * Returns an array of the available signup domains.
+     *
      * @return array
      */
     public function getSignupDomains(): array
@@ -111,15 +126,30 @@ class Zepher
 
 
     /**
+     * Passes the persistence class values for saving.
+     *
+     * @param AccessValueObject $accessValueObject
+     * @return void
+     * @throws Exception
+     */
+    private function updateValueObject(AccessValueObject $accessValueObject)
+    {
+        if (!$this->persistenceClass->setAccessValues($accessValueObject)) {
+            throw new Exception('Failed to save access value object.');
+        }
+    }
+
+    /**
      * Sets the account version id using the persistence class.
-     * @param $accountId
+     *
      * @param string $versionId
      * @return bool
      * @throws Exception
      */
-    public function setAccountVersionId($accountId, string $versionId): bool
+    public function setAccountVersionId(string $versionId): bool
     {
-        if (!$this->persistenceClass->setVersionId($accountId, $versionId)) {
+        $this->accessValueObject->setVersionId($versionId);
+        if (!$this->persistenceClass->setAccessValues($this->accessValueObject)) {
             throw new Exception('Failed to set account access version id.');
         }
         return true;
@@ -127,18 +157,19 @@ class Zepher
 
 
     /**
-     * Gets the account version id using the persistence class.
-     * @param $accountId
+     * Gets the account version id from the current AccessValueObject.
+     *
      * @return string|null
      */
-    public function getAccountVersionId($accountId): ?string
+    public function getAccountVersionId(): ?string
     {
-        return $this->persistenceClass->getVersionId($accountId);
+        return $this->accessValueObject->getVersionId();
     }
 
 
     /**
      * Returns version data for the id provided.
+     *
      * @param string $versionId
      * @return array
      */
@@ -150,6 +181,7 @@ class Zepher
 
     /**
      * Returns the current domain data.
+     *
      * @return array
      */
     public function getDomain(): array
@@ -160,35 +192,37 @@ class Zepher
 
     /**
      * Returns the current version data.
+     *
      * @return array
      */
     public function getVersion(): array
     {
-        return $this->config['data']['versions'][$this->versionId] ?? [];
+        return $this->config['data']['versions'][$this->accessValueObject->getVersionId()] ?? [];
     }
 
 
     /**
-     * Returns roles for the current version. Useful for providing
-     * a list of roles to select from when managing users.
+     * Returns roles for the current version. Useful for providing a list of roles to select from when managing users.
+     *
      * @return array
      */
     public function getRoles(): array
     {
         $roles = [];
-        foreach ($this->config['data']['versions'][$this->versionId]['roles'] ?? [] as $id) {
+        foreach ($this->config['data']['versions'][$this->accessValueObject->getVersionId()]['roles'] ?? [] as $id) {
             $roles[] = $this->config['data']['roles'][$id];
         }
-        usort($roles, function ($item1, $item2) {
-            return $item1['title'] <=> $item2['title'];
+        usort($roles, function ($a, $b) {
+            return $a['title'] <=> $b['title'];
         });
         return $roles;
     }
 
 
     /**
-     * Returns role titles for the provided ids, sorted by title. Useful
-     * for providing a list of the roles a user is currently assigned.
+     * Returns role titles for the provided ids, sorted by title. Useful for providing a list of the roles a user is
+     * currently assigned.
+     *
      * @param array $roleIds
      * @return array [id => title]
      */
@@ -196,7 +230,7 @@ class Zepher
     {
         $roles = [];
         foreach ($roleIds as $roleId) {
-            if (isset($this->config['data']['version'][$this->versionId]['roles'][$roleId])) {
+            if (isset($this->config['data']['version'][$this->accessValueObject->getVersionId()]['roles'][$roleId])) {
                 $roles[$roleId] = $this->config['data']['roles'][$roleId];
             }
         }
@@ -206,13 +240,11 @@ class Zepher
 
 
     /**
-     * Returns an array of versions matching $tags sorted by $sortKey.
-     * If $tags is an array, in_array() is used against version tag. If
-     * $tags is a string, fnmatch() is used against version tag permitting
-     * wildcards.
+     * Returns an array of versions matching $tags sorted by $sortKey. If $tags is an array, in_array() is used against
+     * version tag. If $tags is a string, fnmatch() is used against version tag permitting wildcards.
      *
-     * This is a convenience method. It was used in earlier data structures
-     * (before domains were introduced). There might be a use case for it.
+     * This is a convenience method. It was used in earlier data structures (before domains were introduced). There might
+     * be a use case for it, so it remains here. (It's also one of those functions you hate to delete.)
      *
      * @param mixed $tags
      * @param string $sortKey Default is 'tag'
@@ -232,17 +264,17 @@ class Zepher
                 }
             }
         }
-        usort($a, function ($item1, $item2) use ($sortKey) {
-            return $item1[$sortKey] <=> $item2[$sortKey];
+        usort($a, function ($a, $b) use ($sortKey) {
+            return $a[$sortKey] <=> $b[$sortKey];
         });
         return $a;
     }
 
 
     /**
-     * Returns a bool indicating if the user has access to the feature with optional permission.
-     * If no permission is provided, the method will return true if the user has at least one of
-     * the roles associated with the feature.
+     * Returns a bool indicating if the user has access to the feature with optional permission. If no permission is
+     * provided, the method will return true if the user has at least one of the roles associated with the feature.
+     *
      * @param string $feature
      * @param array $userRoles
      * @param string|null $permission
@@ -252,7 +284,7 @@ class Zepher
     {
         // TODO: Replace in_array() usage with more efficient logic. (This method is frequently called.)
 
-        if (in_array($feature, $this->config['data']['versions'][$this->versionId]['features'])) {
+        if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features'])) {
 
             if ($permission == null) {
 
@@ -276,13 +308,15 @@ class Zepher
 
 
     /**
-     * Method for determining if a module is active in the current environment.
+     * Method for determining if a module is active in the current environment. Useful for determining module related
+     * events and information (i.e. tips and alerts).
+     *
      * @param string $moduleId
      * @return bool
      */
     public function moduleIsActive(string $moduleId): bool
     {
-        return in_array($moduleId,$this->config['data']['versions'][$this->versionId]['modules']);
+        return in_array($moduleId, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['modules']);
     }
 
 }

@@ -1,46 +1,90 @@
 <?php
 /**
- * This class simply stores account access versions using the filesystem.
+ * This class simply stores account access data using the filesystem.
  *
- * You should use a database persistence class implementing the
- * PersistenceClassInterface provided. Pass your persistence class into
- * the Zepher constructor.
+ * You should use a database persistence class implementing the PersistenceClassInterface provided. Pass your persistence
+ * class into the Zepher constructor.
  *
  * If you decide to use the filesystem, do not upload the local version!!
  */
 
 namespace DeLoachTech\Zepher;
 
-class FilesystemPersistence implements PersistenceClassInterface
+class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPersistenceInterface
 {
+
     private $persistenceFile;
 
-    public function setup(string $configFile, $accountId, ?string $domainId)
+
+    public function configFile($configFile)
     {
         $info = pathinfo($configFile);
         $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
-        $this->persistenceFile = $dir . $info['filename'] . '.accounts.json';
+        $this->persistenceFile = $dir . $info['filename'] . '.access.json';
     }
 
-    public function getVersionId($accountId): ?string
+
+    public function getAccessValues(AccessValueObject $accessValueObject)
     {
         if (file_exists($this->persistenceFile)) {
             $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
-            return $data[$accountId] ?? null;
+
+            if ($versions = $data[$accessValueObject->getAccountId()]) {
+
+                // Get the latest activated version.
+
+                usort($versions, function ($a, $b) {
+                    return $b['activated'] <=> $a['activated'];
+                });
+
+                $accessValueObject
+                    ->setVersionId($versions[0]['version_id'] ?? null)
+                    ->setActivated($versions[0]['activated'])
+                    ->setLastProcess($versions[0]['last_process'] ?? null)
+                    ->setClosed($versions[0]['closed'] ?? null);
+            }
         }
-        return null;
     }
 
-    public function setVersionId($accountId, string $versionId): bool
+    public function setAccessValues(AccessValueObject $accessValueObject): bool
     {
         if (file_exists($this->persistenceFile)) {
             $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
         }
-        $data[$accountId] = $versionId;
+
+        $data[$accessValueObject->getAccountId()][] = [
+            'version_id' => $accessValueObject->getVersionId(),
+            'activated' => $accessValueObject->getActivated()
+        ];
+
         if (file_put_contents($this->persistenceFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
             return false;
         }
         return true;
     }
 
+
+    public function getAccessValueObjects($accountId): array
+    {
+        $data = [];
+
+        if (file_exists($this->persistenceFile)) {
+            $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
+        }
+
+        $accessValueObjects = [];
+
+        foreach ($data[$accountId] as $values) {
+
+            if (empty($values['closed'])) {
+
+                $accessValueObjects[] = (new AccessValueObject($accountId))
+                    ->setActivated($values['activated'])
+                    ->setVersionId($values['version_id'])
+                    ->setLastProcess($values['last_processed'] ?? null);
+            }
+        }
+        return $accessValueObjects;
+
+    }
 }
