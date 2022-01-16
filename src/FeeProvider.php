@@ -8,17 +8,12 @@
  *
  * Example usage:
  *
- * $feeProvider = new FeeProvider(new YourFeeProcessorClass(), new YourDataPersistenceClass(), __DIR__);
- *
- * $accounts = getAccounts();
- *
- * foreach($accounts as $account){
- *    $feeProvider->processFee($account->getId());
- * }
+ * $feeProvider = new FeeProvider(new YourFeeProcessorClass(), new YourDataPersistenceClass(), $yourConfigDirectory);
+ * $feeProvider->process();
  *
  * Your fee processing class must extend the FeeProviderInterface provided.
  *
- * You'll probably be calling this class via a cron, loping through your accounts. For efficiency, your account selection
+ * You'll probably be calling this class via a cron, looping through your accounts. For efficiency, your account selection
  * logic should include some sort of filtering and/or throttling to avoid timeouts.
  */
 
@@ -34,6 +29,12 @@ class FeeProvider
     private $feeProcessingClass;
     private $dataPersistenceClass;
 
+    /**
+     * @param object $feeProcessingClass
+     * @param object $dataPersistenceClass
+     * @param string $configFileDirectory
+     * @throws Exception
+     */
     public function __construct(
         object $feeProcessingClass,
         object $dataPersistenceClass,
@@ -51,117 +52,92 @@ class FeeProvider
 
         $this->config = json_decode(file_get_contents($configFile), true);
 
-        if ($feeProcessingClass instanceof FeeProviderInterface) {
-
+        if ($feeProcessingClass instanceof FeeProcessorInterface) {
             $this->feeProcessingClass = $feeProcessingClass;
-            $this->dataPersistenceClass = $dataPersistenceClass;
-
-            $this->dataPersistenceClass->setConfigFile($configFile);
             $this->feeProcessingClass->configFile($configFile);
-
         } else {
             throw new Exception('Fee processing class must implement ' . __NAMESPACE__ . '\FeeProviderInterface');
+        }
+
+        if ($dataPersistenceClass instanceof FeeProviderPersistenceInterface) {
+            $this->dataPersistenceClass = $dataPersistenceClass;
+            $this->dataPersistenceClass->configFile($configFile);
+        } else {
+            throw new Exception('Data persistence class must implement ' . __NAMESPACE__ . '\FeeProviderPersistenceInterface');
         }
     }
 
 
-    public function processFees($accountId): void
+    /**
+     * Call this method when you wish to process fees.
+     *
+     * This method will fetch all accounts ready for processing. It will send each record for processing to the
+     * processFees() method of tour fee processing class. Upon success, it will update the record status for the next
+     * processing event.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function process(): void
     {
-        $accessValueObject = new AccessValueObject($accountId);
+        $accountIds = array_unique($this->dataPersistenceClass->getAccountIdsReadyForFeeProcessing());
 
-        $this->dataPersistenceClass->getAccessValues($accessValueObject);
+        foreach ($accountIds as $accountId) {
 
-        /**
-         * Keep the monthly cycle days <=28, so we can eliminate the complexities of uneven days in a month. This way
-         * all monthly fee processing will happen from the 1st through the 28th.
-         */
-        $accountDayOfMonth =  $this->feeProcessingClass->getBillingDayOfMonth($accountId);
-        if($accountDayOfMonth >0 && $accountDayOfMonth <= 28){
-            $billingCycleDay = $accountDayOfMonth;
-        }elseif ($accountDayOfMonth >28){
-            $billingCycleDay = 28;
-        }else{
-            throw new Exception("Invalid account billing day of month for {$accountId}. Expected a value between 1-28, got {$accountDayOfMonth}.");
-        }
-
-        /**
-         * It's our responsibility to validate each VO status and filter out any closed records. The user could pass in
-         * a closed record and blow the world up!
-         */
-        $valueObjects = $this->dataPersistenceClass->getAccessValueObjects($accountId) ??[];
-        $records = [];
-        foreach ($valueObjects as $valueObject){
-            if(!empty($valueObject->getClosed())){
-                $records[] = $valueObject;
+            /**
+             * Validate each VO status and filter out any closed records. (A closed record will blow up the beginning
+             * timestamp logic for a closed record.)
+             */
+            $records = [];
+            foreach ($this->dataPersistenceClass->getAccessValueObjects($accountId) as $valueObject) {
+                if (empty($valueObject->getClosed())) {
+                   $records[] = $valueObject;
+                }
             }
-        }
 
-        /**
-         * Process all unclosed account access records regardless of the cycle time, so we can close those that need to
-         * be closed.
-         */
-        if (!empty($records)) {
-
-            // Make sure we're sorted by the activated timestamp
-            usort($records, function ($a, $b) {
-                return $a->getActivated() <=> $b->getActivated();
-            });
-
-            foreach ($records as $key => $record) {
-
-                $beginTimestamp = $record->getLastProcess() ?? $record->getActivated();
+            /**
+             * Process all unclosed records regardless of the cycle time, so we can close those that need to be closed.
+             */
+            if (!empty($records)) {
 
                 /**
-                 * An account should not have more than one open access record. If so, it means they've changed their
-                 * access version, and we must finalize any recurring fees.
+                 * Make sure we're sorted by the activated timestamp.
                  */
-                $closeRecord = count($records) > 1 && $key !== array_key_last($records);
+                usort($records, function ($a, $b) {
+                    return $a->getActivated() <=> $b->getActivated(); // Sort ascending
+                });
 
-                if ($closeRecord) {
+                $timestamp = time();
 
-                    // The end timestamp is the next version activated timestamp.
-                    $endTimestamp = $records[$key + 1]['activated'];
+                foreach ($records as $key => $record) {
 
-                    if ($this->feeProcessingClass->processFees(
-                            $accountId,
-                            $record->getVersionId(),
-                            $this->config['data']['versions'][$record->getVersionId()]['fees'] ?? [],
-                            $beginTimestamp,
-                            $endTimestamp
-                        ) == false) {
+                    $beginTimestamp = $record->getLastProcess() ?? $record->getActivated();
+
+                    $fees = [];
+                    foreach ($this->config['data']['versions'][$record->getVersionId()]['fees'] as $feeId) {
+                        $fees[] = $this->config['data']['fees'][$feeId];
+                    }
+
+                    /**
+                     * An account should not have more than one open access record. If so, it means they've changed their
+                     * access version, and fees need to be finalized.
+                     */
+                    $closeRecord = count($records) > 1 && $key !== array_key_last($records);
+
+                    $endTimestamp = $closeRecord ? $records[$key + 1]->getActivated() : $timestamp;
+
+                    if ($this->feeProcessingClass->processFees($accountId, $record->getVersionId(), $fees, $beginTimestamp, $endTimestamp) == false) {
                         throw new Exception("Failed to process fees for {$accountId}:{$record->getVersionId()}:{$record->getActivated()}");
                     }
 
-                    $accessValueObject
-                        ->setLastProcess($endTimestamp)
-                        ->setClosed($endTimestamp);
+                    $record->setLastProcess($endTimestamp);
 
-                    if ($this->dataPersistenceClass->setAccessValues($accessValueObject) == false) {
-                        throw new Exception("Processed fees (if any), but failed to update status for  {$accountId}:{$record->getVersionId()}:{$record->getActivated()}");
+                    if ($closeRecord) {
+                        $record->setClosed($endTimestamp);
                     }
 
-                } else {
-
-                    // The end timestamp is the beginning timestamp plus the account billing cycle days in seconds.
-                    $endTimestamp = $beginTimestamp + (60 * 60 * 24 * $billingCycleDay);
-
-                    if ($endTimestamp <= time()) {
-
-                        if ($this->feeProcessingClass->processFees(
-                                $accountId,
-                                $record->getVersionId(),
-                                $this->config['data']['versions'][$record->getVersionId()]['fees'] ?? [],
-                                $beginTimestamp,
-                                $endTimestamp
-                            ) == false) {
-                            throw new Exception("Failed to process fees for {$accountId}:{$record->getVersionId()}:{$record->getActivated()}");
-                        }
-
-                        $accessValueObject->setLastProcess($endTimestamp);
-
-                        if ($this->dataPersistenceClass->setAccessValues($accessValueObject) == false) {
-                            throw new Exception("Processed fees (if any), but failed to update status for  {$accountId}:{$record->getVersionId()}:{$record->getActivated()}");
-                        }
+                    if ($this->dataPersistenceClass->setAccessValues($record) == false) {
+                        throw new Exception("Processed fees (if any), but failed to update status for  {$accountId}:{$record->getVersionId()}:{$record->getActivated()}");
                     }
                 }
             }

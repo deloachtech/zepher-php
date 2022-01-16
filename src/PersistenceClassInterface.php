@@ -6,7 +6,7 @@ interface PersistenceClassInterface
 {
 
     /**
-     * The current config file being used. (In case you need it.)
+     * The current config zepher.json file being used. (In case you need it.)
      *
      * @param $configFile
      */

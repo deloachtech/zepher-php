@@ -3,9 +3,7 @@
  * The zepher.json data processing class.
  *
  * Although fully functional, this class is provided to get things started. You can roll your own, or extend this one
- * into a service and add/modify functionality. (If you extend into a service, you can also use the service as the data
- * persistence class.)
- *
+ * into a service and add/modify functionality.
  */
 
 namespace DeLoachTech\Zepher;
@@ -245,6 +243,8 @@ class Zepher
      *
      * This is a convenience method. It was used in earlier data structures (before domains were introduced). There might
      * be a use case for it, so it remains here. (It's also one of those functions you hate to delete.)
+     *
+     * See https://www.php.net/manual/en/function.fnmatch.php for more information.
      *
      * @param mixed $tags
      * @param string $sortKey Default is 'tag'

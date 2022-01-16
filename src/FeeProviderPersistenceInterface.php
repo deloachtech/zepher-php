@@ -8,9 +8,21 @@ namespace DeLoachTech\Zepher;
 
 interface FeeProviderPersistenceInterface
 {
+    /**
+     * Your job is to return an array of account ids you want to submit for processing.
+     *
+     * How you accomplish this is dependent on your billing cycle. You could select all accounts based on their creation
+     * day matching the current day. You could select accounts from your access data where the last process timestamp
+     * is older than n days. (Once processed, the last process timestamp is updated.)
+     *
+     * See docs.zepher.io for example selection queries.
+     *
+     * @return array An indexed array of account ids.
+     */
+    public function getAccountIdsReadyForFeeProcessing(): array;
 
     /**
-     * Your job is to get all access records for the account and return a AccessValueObjects for each record.
+     * Your job is to get all access records for the account and return an AccessValueObject for each record.
      *
      * $array = [];
      * $records = getAccountAccessRecords($accountId);
