@@ -2,7 +2,7 @@
 
 include "init.inc.php";
 
-$records = json_decode(file_get_contents('zepher.access.json'), true)[$database['account']['id']] ?? [];
+$records = json_decode(file_get_contents('zepher.access.json'), true)[$session['account']['id']] ?? [];
 
 usort($records, function ($a, $b) {
     return $b['activated'] <=> $a['activated']; // Sort descending
@@ -36,7 +36,7 @@ usort($records, function ($a, $b) {
         $version = $zepher->getVersionById($record['version_id']);
         ?>
         <tr>
-            <td><?= $database['account']['id'] ?></td>
+            <td><?= $session['account']['id'] ?></td>
             <td><?= $version['title'] ?></td>
             <td><?= $version['id'] ?></td>
             <td><?= $record['activated'] ?></td>

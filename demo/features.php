@@ -2,7 +2,7 @@
 
 include "init.inc.php";
 
-$roles = $database['user']['roles'];
+$roles = $session['user']['roles'];
 ?>
 <html lang="en">
 <head>

@@ -9,11 +9,11 @@ include "../src/FeeProviderPersistenceInterface.php";
 include "../src/FilesystemPersistence.php";
 include "../src/Zepher.php";
 
-$database = json_decode(file_get_contents('database.json'), true) ?? [];
+$session = json_decode(file_get_contents('session.json'), true) ?? [];
 
-$zepher = new Zepher($database['account']['id'], $database['account']['domain_id'], new FilesystemPersistence(), __DIR__);
+$zepher = new Zepher($session['account']['id'], $session['account']['domain_id'], new FilesystemPersistence(), __DIR__);
 
-function updateDatabase($database)
+function updateSession($session)
 {
-    file_put_contents('database.json', json_encode($database, JSON_PRETTY_PRINT));
+    file_put_contents('session.json', json_encode($session, JSON_PRETTY_PRINT));
 }

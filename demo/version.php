@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $zepher->setAccountVersionId($_POST['version']);
 
         // The default FilesystemPersistence class manages the version. For completeness, we'll update the "database"
-        $database['account']['version_id'] = $_POST['version'];
-        updateDatabase($database);
+        $session['account']['version_id'] = $_POST['version'];
+        updateSession($session);
     }
 
     header("location: versions.php");

@@ -4,11 +4,11 @@ include "init.inc.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $database['user']['roles'] = $_POST['roles'];
-    updateDatabase($database);
+    $session['user']['roles'] = $_POST['roles'];
+    updateSession($session);
 }
 
-$current = array_flip($database['user']['roles'] ?? []);
+$current = array_flip($session['user']['roles'] ?? []);
 ?>
 <html lang="en">
 <head>
