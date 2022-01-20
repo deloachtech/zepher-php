@@ -146,7 +146,10 @@ class Zepher
      */
     public function setAccountVersionId(string $versionId): bool
     {
-        $this->accessValueObject->setVersionId($versionId);
+        $this->accessValueObject
+            ->setVersionId($versionId)
+            ->setActivated(time())
+        ;
         if (!$this->persistenceClass->setAccessValues($this->accessValueObject)) {
             throw new Exception('Failed to set account access version id.');
         }
@@ -304,6 +307,27 @@ class Zepher
             }
         }
         return false;
+    }
+
+    /**
+     * Returns an array of feature permissions assigned for every user role.
+     *
+     * @param string $featureId
+     * @param array $roleIds
+     * @return array
+     */
+    public function getUserFeaturePermissions(string $featureId, array $roleIds): array
+    {
+        $ret = [];
+        foreach ($this->config['data']['access'][$featureId] as $roleId => $arr) {
+            if (in_array($roleId, $roleIds)) {
+                foreach ($arr as $permissionId) {
+                    $ret[$permissionId] = 1;
+                }
+            }
+        }
+        ksort($ret);
+        return array_keys($ret);
     }
 
 

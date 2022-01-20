@@ -32,16 +32,13 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
             if ($versions = $data[$accessValueObject->getAccountId()]) {
 
                 // Get the latest activated version.
-
-                usort($versions, function ($a, $b) {
-                    return $b['activated'] <=> $a['activated'];
-                });
+                $end = end($versions);
 
                 $accessValueObject
-                    ->setVersionId($versions[0]['version_id'] ?? null)
-                    ->setActivated($versions[0]['activated'])
-                    ->setLastProcess($versions[0]['last_process'] ?? null)
-                    ->setClosed($versions[0]['closed'] ?? null);
+                    ->setVersionId($end['version_id'] ?? null)
+                    ->setActivated($end['activated'])
+                    ->setLastProcess($end['last_process'] ?? null)
+                    ->setClosed($end['closed'] ?? null);
             }
         }
     }
@@ -86,5 +83,10 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
         }
         return $accessValueObjects;
 
+    }
+
+    public function getAccountIdsReadyForFeeProcessing(): array
+    {
+        // TODO: Implement getAccountIdsReadyForFeeProcessing() method.
     }
 }

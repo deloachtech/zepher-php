@@ -1,0 +1,131 @@
+{
+  "_readme": [
+    "This data is dynamically generated at zepher.io",
+    "Manual edits will be overwritten",
+    "See docs.zepher.io for more information"
+  ],
+  "data": {
+    "app": {
+      "id": "app_vdkhAr1QWeT2jwta",
+      "title": "Zepher Demo",
+      "desc": "Zepher Demo Application",
+      "api_key": "78ab13c2e688fd42a6b0bac93a562cd90d7b00f9f26c185ff485d4fdd43049ed",
+      "permission_all": "PERMISSION_*"
+    },
+    "domains": {
+      "dom_vkx8JpKemA7YVfMN": {
+        "id": "dom_vkx8JpKemA7YVfMN",
+        "title": "Demo",
+        "desc": "Demo Application",
+        "signup": true,
+        "signup_role": "rol_CxcX5EkMvwUJDYyz",
+        "versions": [
+          "ver_Hv1Ar93gtcWXhqKd",
+          "ver_vNGmYuKX2whpeDrJ"
+        ]
+      }
+    },
+    "roles": {
+      "rol_CxcX5EkMvwUJDYyz": {
+        "id": "rol_CxcX5EkMvwUJDYyz",
+        "title": "Super User",
+        "desc": "Can do anything."
+      },
+      "rol_AmDbfcMTvRrVnB6t": {
+        "id": "rol_AmDbfcMTvRrVnB6t",
+        "title": "System Administrator",
+        "desc": "Can do almost anything."
+      },
+      "rol_ZASaTvWUgDPskCGh": {
+        "id": "rol_ZASaTvWUgDPskCGh",
+        "title": "CEO",
+        "desc": "Has read access to everything."
+      }
+    },
+    "access": {
+      "FEATURE_ACCESS": {
+        "rol_CxcX5EkMvwUJDYyz": [
+          "PERMISSION_*"
+        ]
+      },
+      "FEATURE_ACCOUNT": {
+        "rol_AmDbfcMTvRrVnB6t": [
+          "PERMISSION_UPDATE",
+          "PERMISSION_CREATE",
+          "PERMISSION_READ"
+        ],
+        "rol_CxcX5EkMvwUJDYyz": [
+          "PERMISSION_*"
+        ],
+        "rol_ZASaTvWUgDPskCGh": [
+          "PERMISSION_READ"
+        ]
+      },
+      "FEATURE_ACCOUNT_API_KEY": {
+        "rol_AmDbfcMTvRrVnB6t": [
+          "PERMISSION_READ"
+        ],
+        "rol_CxcX5EkMvwUJDYyz": [
+          "PERMISSION_*"
+        ]
+      },
+      "FEATURE_ACCOUNT_USERS": {
+        "rol_CxcX5EkMvwUJDYyz": [
+          "PERMISSION_*"
+        ],
+        "rol_AmDbfcMTvRrVnB6t": [
+          "PERMISSION_*"
+        ]
+      },
+      "FEATURE_NETWORK_ACCOUNTS": []
+    },
+    "fees": [],
+    "versions": {
+      "ver_Hv1Ar93gtcWXhqKd": {
+        "id": "ver_Hv1Ar93gtcWXhqKd",
+        "tag": "demo.1",
+        "title": "Basic",
+        "desc": "Core application features",
+        "fee_desc": "There are no fees",
+        "modules": [
+          "mod_gMzND5BVkYp3HKPS"
+        ],
+        "fees": [],
+        "roles": [
+          "rol_CxcX5EkMvwUJDYyz",
+          "rol_AmDbfcMTvRrVnB6t",
+          "rol_ZASaTvWUgDPskCGh"
+        ],
+        "features": [
+          "FEATURE_ACCESS",
+          "FEATURE_ACCOUNT",
+          "FEATURE_ACCOUNT_API_KEY",
+          "FEATURE_ACCOUNT_USERS"
+        ]
+      },
+      "ver_vNGmYuKX2whpeDrJ": {
+        "id": "ver_vNGmYuKX2whpeDrJ",
+        "tag": "demo.2",
+        "title": "Plus",
+        "desc": "Basic version + account networking",
+        "fee_desc": null,
+        "modules": [
+          "mod_gMzND5BVkYp3HKPS",
+          "mod_mxyA3SQ7CHdKWsnw"
+        ],
+        "fees": [],
+        "roles": [
+          "rol_CxcX5EkMvwUJDYyz",
+          "rol_AmDbfcMTvRrVnB6t",
+          "rol_ZASaTvWUgDPskCGh"
+        ],
+        "features": [
+          "FEATURE_ACCESS",
+          "FEATURE_ACCOUNT",
+          "FEATURE_ACCOUNT_API_KEY",
+          "FEATURE_ACCOUNT_USERS"
+        ]
+      }
+    }
+  }
+}
