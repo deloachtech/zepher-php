@@ -148,8 +148,7 @@ class Zepher
     {
         $this->accessValueObject
             ->setVersionId($versionId)
-            ->setActivated(time())
-        ;
+            ->setActivated(time());
         if (!$this->persistenceClass->setAccessValues($this->accessValueObject)) {
             throw new Exception('Failed to set account access version id.');
         }
@@ -283,8 +282,12 @@ class Zepher
      * @param string|null $permission
      * @return bool
      */
-    public function userCanAccess(string $feature, array $userRoles, string $permission = null): bool
+    public function userCanAccess(string $feature, ?array $userRoles, string $permission = null): bool
     {
+        if (!$this->accessValueObject) {
+            return false;
+        }
+
         // TODO: Replace in_array() usage with more efficient logic. (This method is frequently called.)
 
         if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features'])) {

@@ -23,13 +23,13 @@ interface FeeProcessorInterface
      *
      * @param mixed $accountId
      * @param string $versionId
-     * @param array $fees The fees from the current zepher.json file for the version id.
+     * @param array $feeProcessStrings The fee process strings used to calculate the amount. These strings were defined in your fees and applied in the version schema.
      * @param int $beginTimestamp The calculated billing cycle begin date.
      * @param int $endTimestamp The calculated billing cycle begin date.
      *
      * @return bool If false, the current processing will stop and an exception will be thrown.
      */
-    public function processFees($accountId, string $versionId, array $fees, int $beginTimestamp, int $endTimestamp): bool;
+    public function processFees($accountId, string $versionId, array $feeProcessStrings, int $beginTimestamp, int $endTimestamp): bool;
 
 
 }
