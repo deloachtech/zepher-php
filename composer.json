@@ -1,5 +1,5 @@
 {
-  "name": "deloachtech/zepher",
+  "name": "deloachtech/zepher-php",
   "description": "Domain and user access control for your codebase.",
   "type": "library",
   "license": "MIT",

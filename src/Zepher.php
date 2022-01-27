@@ -278,7 +278,7 @@ class Zepher
      * provided, the method will return true if the user has at least one of the roles associated with the feature.
      *
      * @param string $feature
-     * @param array $userRoles
+     * @param array|null $userRoles
      * @param string|null $permission
      * @return bool
      */

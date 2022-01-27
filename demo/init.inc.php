@@ -1,5 +1,7 @@
 <?php
 
+// Simulates a full installation.
+
 use DeLoachTech\Zepher\FilesystemPersistence;
 use DeLoachTech\Zepher\Zepher;
 

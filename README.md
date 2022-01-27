@@ -29,9 +29,9 @@ This is the `PHP` version of the processor for the universal `zepher.json` objec
 
 Install it via composer:
 
-    composer require deloachtech/zepher
+    composer require deloachtech/zepher-php
 
-Or download the package at https://github.com/deloachtech/zepher.
+Or download the package at https://github.com/deloachtech/zepher-pho.
 
 
 ## Usage
