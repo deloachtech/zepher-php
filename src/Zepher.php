@@ -18,6 +18,7 @@ class Zepher
 
     private $persistenceClass;
 
+
     /**
      * @param mixed $accountId The active account id (if any).
      * @param mixed $domainId The current domain id.
@@ -136,6 +137,7 @@ class Zepher
             throw new Exception('Failed to save access value object.');
         }
     }
+
 
     /**
      * Sets the account version id using the persistence class.
@@ -312,6 +314,7 @@ class Zepher
         return false;
     }
 
+
     /**
      * Returns an array of feature permissions assigned for every user role.
      *
@@ -335,6 +338,17 @@ class Zepher
 
 
     /**
+     * Returns an array of module ids associated with a domain.
+     *
+     * @return array
+     */
+    public function getDomainModules(): array
+    {
+        return $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['modules'] ?? [];
+    }
+
+
+    /**
      * Method for determining if a module is active in the current environment. Useful for determining module related
      * events and information (i.e. tips and alerts).
      *
@@ -345,5 +359,4 @@ class Zepher
     {
         return in_array($moduleId, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['modules']);
     }
-
 }
