@@ -109,7 +109,7 @@ class AccessRepository extends ServiceEntityRepository implements PersistenceCla
         return $this->getEntityManager()->getConnection()->executeQuery("select account_id, version_id, activated, last_process, closed from access where account_id = ?", [$accountId])->fetchAllAssociative() ?? [];
     }
 
-    private function getRecord(string $accountId, string $versionId, int $activated): array
+    private function getRecord(string $accountId, string $versionId, int $activated)
     {
         return $this->getEntityManager()->getConnection()->executeQuery("select account_id, version_id, activated, last_process, closed from access where account_id = ? and version_id = ? and activated = ? limit 1", [$accountId, $versionId, $activated])->fetchAssociative() ?? [];
     }
