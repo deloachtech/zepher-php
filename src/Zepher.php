@@ -193,6 +193,27 @@ class Zepher
 
 
     /**
+     * Returns the current domain network.
+     *
+     * @return array
+     */
+    public function getDomainNetwork(): array
+    {
+        $domains = [];
+
+        foreach ($this->config['data']['domains'][$this->domainId]['network'] ?? [] as $id) {
+
+            $domains[$id] = [
+                'id' => $id,
+                'title' => $this->config['data']['domains'][$id]['title']
+            ];
+        }
+
+        return $domains;
+    }
+
+
+    /**
      * Returns the current version data.
      *
      * @return array

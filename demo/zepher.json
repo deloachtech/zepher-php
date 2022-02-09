@@ -9,45 +9,73 @@
       "id": "app_vdkhAr1QWeT2jwta",
       "title": "Zepher Demo",
       "desc": "Zepher Demo Application",
-      "api_key": "78ab13c2e688fd42a6b0bac93a562cd90d7b00f9f26c185ff485d4fdd43049ed",
+      "api_key": "9e1ac8d4bbf6934ea2b7ba1bbe55e5fa497a4951d5544a5569ac3d3df4772eb6",
+      "version_id": "",
       "permission_all": "PERMISSION_*"
     },
     "domains": {
       "dom_vkx8JpKemA7YVfMN": {
         "id": "dom_vkx8JpKemA7YVfMN",
-        "title": "Demo",
-        "desc": "Demo Application",
+        "title": "Domain 1",
+        "desc": "Demo app domain",
         "signup": true,
         "signup_role": "rol_CxcX5EkMvwUJDYyz",
         "versions": [
           "ver_Hv1Ar93gtcWXhqKd",
-          "ver_vNGmYuKX2whpeDrJ"
+          "ver_vNGmYuKX2whpeDrJ",
+          "ver_pWm2hYq51aduJsKP"
+        ],
+        "network": [
+          "dom_E3rAqjaVcJSw2zCQ",
+          "dom_YprFaJuxmb31PZ4U"
         ]
+      },
+      "dom_E3rAqjaVcJSw2zCQ": {
+        "id": "dom_E3rAqjaVcJSw2zCQ",
+        "title": "Domain 2",
+        "desc": "Demo app domain",
+        "signup": false,
+        "signup_role": null,
+        "versions": [
+          "ver_Hv1Ar93gtcWXhqKd",
+          "ver_vNGmYuKX2whpeDrJ",
+          "ver_pWm2hYq51aduJsKP"
+        ],
+        "network": [
+          "dom_vkx8JpKemA7YVfMN"
+        ]
+      },
+      "dom_YprFaJuxmb31PZ4U": {
+        "id": "dom_YprFaJuxmb31PZ4U",
+        "title": "Domain 3",
+        "desc": "Demo app domain",
+        "signup": false,
+        "signup_role": null,
+        "versions": [
+          "ver_Hv1Ar93gtcWXhqKd",
+          "ver_pWm2hYq51aduJsKP"
+        ],
+        "network": []
       }
     },
     "roles": {
-      "rol_CxcX5EkMvwUJDYyz": {
-        "id": "rol_CxcX5EkMvwUJDYyz",
-        "title": "Super User",
-        "desc": "Can do anything."
-      },
       "rol_AmDbfcMTvRrVnB6t": {
         "id": "rol_AmDbfcMTvRrVnB6t",
         "title": "System Administrator",
         "desc": "Can do almost anything."
       },
+      "rol_CxcX5EkMvwUJDYyz": {
+        "id": "rol_CxcX5EkMvwUJDYyz",
+        "title": "Super User",
+        "desc": "Can do anything."
+      },
       "rol_ZASaTvWUgDPskCGh": {
         "id": "rol_ZASaTvWUgDPskCGh",
-        "title": "CEO",
-        "desc": "Has read access to everything."
+        "title": "President (CEO)",
+        "desc": null
       }
     },
     "access": {
-      "FEATURE_ACCESS": {
-        "rol_CxcX5EkMvwUJDYyz": [
-          "PERMISSION_*"
-        ]
-      },
       "FEATURE_ACCOUNT": {
         "rol_AmDbfcMTvRrVnB6t": [
           "PERMISSION_UPDATE",
@@ -61,23 +89,16 @@
           "PERMISSION_READ"
         ]
       },
-      "FEATURE_ACCOUNT_API_KEY": {
-        "rol_AmDbfcMTvRrVnB6t": [
-          "PERMISSION_READ"
-        ],
-        "rol_CxcX5EkMvwUJDYyz": [
-          "PERMISSION_*"
-        ]
-      },
       "FEATURE_ACCOUNT_USERS": {
         "rol_CxcX5EkMvwUJDYyz": [
           "PERMISSION_*"
         ],
         "rol_AmDbfcMTvRrVnB6t": [
-          "PERMISSION_*"
+          "PERMISSION_UPDATE",
+          "PERMISSION_CREATE",
+          "PERMISSION_READ"
         ]
-      },
-      "FEATURE_NETWORK_ACCOUNTS": []
+      }
     },
     "fees": [],
     "versions": {
@@ -86,20 +107,18 @@
         "tag": "demo.1",
         "title": "Basic",
         "desc": "Core application features",
-        "fee_desc": "There are no fees",
+        "fee_process_strings": [],
+        "fee_desc": null,
         "modules": [
-          "mod_gMzND5BVkYp3HKPS"
+          "MODULE_CORE"
         ],
-        "fees": [],
         "roles": [
-          "rol_CxcX5EkMvwUJDYyz",
           "rol_AmDbfcMTvRrVnB6t",
+          "rol_CxcX5EkMvwUJDYyz",
           "rol_ZASaTvWUgDPskCGh"
         ],
         "features": [
-          "FEATURE_ACCESS",
           "FEATURE_ACCOUNT",
-          "FEATURE_ACCOUNT_API_KEY",
           "FEATURE_ACCOUNT_USERS"
         ]
       },
@@ -108,21 +127,43 @@
         "tag": "demo.2",
         "title": "Plus",
         "desc": "Basic version + account networking",
-        "fee_desc": null,
-        "modules": [
-          "mod_gMzND5BVkYp3HKPS",
-          "mod_mxyA3SQ7CHdKWsnw"
+        "fee_process_strings": [
+          "monthlyUse|9|0|0"
         ],
-        "fees": [],
+        "fee_desc": "$9\/month",
+        "modules": [
+          "MODULE_CORE"
+        ],
         "roles": [
-          "rol_CxcX5EkMvwUJDYyz",
           "rol_AmDbfcMTvRrVnB6t",
+          "rol_CxcX5EkMvwUJDYyz",
           "rol_ZASaTvWUgDPskCGh"
         ],
         "features": [
-          "FEATURE_ACCESS",
           "FEATURE_ACCOUNT",
-          "FEATURE_ACCOUNT_API_KEY",
+          "FEATURE_ACCOUNT_USERS"
+        ]
+      },
+      "ver_pWm2hYq51aduJsKP": {
+        "id": "ver_pWm2hYq51aduJsKP",
+        "tag": "demo.3",
+        "title": "Premium",
+        "desc": "Plus version + the ability to collect network fees",
+        "fee_process_strings": [
+          "monthlyUse|9|0|0",
+          "percentOfCharge|10|0|0"
+        ],
+        "fee_desc": "Plus fees + 10% fee collected",
+        "modules": [
+          "MODULE_CORE"
+        ],
+        "roles": [
+          "rol_AmDbfcMTvRrVnB6t",
+          "rol_CxcX5EkMvwUJDYyz",
+          "rol_ZASaTvWUgDPskCGh"
+        ],
+        "features": [
+          "FEATURE_ACCOUNT",
           "FEATURE_ACCOUNT_USERS"
         ]
       }

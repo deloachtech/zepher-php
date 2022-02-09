@@ -26,7 +26,7 @@ $current = array_flip($session['user']['roles'] ?? []);
 
 <form method="post">
 
-    <?php foreach ($zepher->getRoles() as $role) { ?>
+    <?php foreach ($zepher->getRoles()??[] as $role) { ?>
 
     <div>
         <label>

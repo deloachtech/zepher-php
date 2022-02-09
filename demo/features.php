@@ -29,7 +29,7 @@ $roles = $session['user']['roles'];
     </tr>
     </thead>
 
-    <?php foreach ($zepher->getVersion()['features'] as $feature) { ?>
+    <?php foreach ($zepher->getVersion()['features']??[] as $feature) { ?>
 
         <tr>
             <td><?= $feature ?></td>
