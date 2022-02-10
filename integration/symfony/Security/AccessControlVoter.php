@@ -37,6 +37,6 @@ class AccessControlVoter extends Voter
             return false;
         }
 
-        return $this->accessControlService->userCanAccess($attribute, $token->getUser()->getRoles(), $subject);
+        return $this->accessControlService->userCanAccess($attribute, $subject);
     }
 }

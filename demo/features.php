@@ -16,8 +16,8 @@ $roles = $session['user']['roles'];
 
 <h1>Active Features</h1>
 
-<p>Feature ids SHOULD be human-readable (e.g. FEATURE_FOO); <code>$zepher->userCanAccess('FEATURE_FOO', $userRoles)</code></p>
-<p>Permission ids SHOULD be human-readable (e.g. PERMISSION_READ); <code>$zepher->userCanAccess('FEATURE_FOO', $userRoles, 'PERMISSION_READ')</code></p>
+<p>Feature ids SHOULD be human-readable (e.g. FEATURE_FOO); <code>$zepher->userCanAccess('FEATURE_FOO')</code></p>
+<p>Permission ids SHOULD be human-readable (e.g. PERMISSION_READ); <code>$zepher->userCanAccess('FEATURE_FOO', 'PERMISSION_READ')</code></p>
 
 <table>
 
@@ -33,7 +33,7 @@ $roles = $session['user']['roles'];
 
         <tr>
             <td><?= $feature ?></td>
-            <td><?= $zepher->userCanAccess($feature, $roles) ? 'true':'false' ?></td>
+            <td><?= $zepher->userCanAccess($feature) ? 'true':'false' ?></td>
             <td><?= implode(", ", $zepher->getUserFeaturePermissions($feature,$roles)) ?></td>
         </tr>
     <?php } ?>

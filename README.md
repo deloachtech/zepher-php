@@ -6,14 +6,14 @@ Zepher works by compiling configurations of RBAC and SaaS versioning into featur
 global assets and multiple applications at `zepher.io` and download the app-specific `zepher.json` file processing
 against the codebase.
 
-    if($zepher->userCanAccess('FEATURE_FOO', $userRoles)){
+    if($zepher->userCanAccess('FEATURE_FOO')){
 
-        // User with a role specified has access to the feature.
+        // User access to the feature.
     }
 
-    if($zepher->userCanAccess('FEATURE_FOO', $userRoles, 'PERMISSION_READ')){
+    if($zepher->userCanAccess('FEATURE_FOO', 'PERMISSION_READ')){
 
-        // User with a role and the permission specified has access to the feature.
+        // User with  the permission specified has access to the feature.
     }
 
 **The logic above will enforce role _and_ versioning restrictions.**
