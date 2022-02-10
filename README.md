@@ -1,39 +1,17 @@
 # Zepher
 
-Add RBAC and fee-based SaaS versioning (e.g. Basic, Plus, Premium) to your codebase.
+This is the Zepher object processor for PHP.
 
-Zepher works by compiling configurations of RBAC and SaaS versioning into feature-based enforcement. You define
-global assets and multiple applications at `zepher.io` and download the app-specific `zepher.json` file processing
-against the codebase.
+Zepher manages application access control configurations online, and produces an optimized, JSON object for use in your existing codebase.
 
-    if($zepher->userCanAccess('FEATURE_FOO')){
+The JSON object contains pre-configured values from complex relationship computations. As a result, simple functions can be used to incorporate extremely useful functionality into your existing codebase.
 
-        // User access to the feature.
-    }
+* Multi-Domain access (e.g. Bank, Hospital)
+* Domain networking (e.g. Affiliate and B2B relations)
+* SaaS versioning (e.g. Basic, Plus, Premium)
+* Process version-specific fees (e.g. $1/user + $9/month)
+* Segregate application features (e.g. User Management, Payment Processing)
+* Apply Role Based Access Control (RBAC)
 
-    if($zepher->userCanAccess('FEATURE_FOO', 'PERMISSION_READ')){
-
-        // User with  the permission specified has access to the feature.
-    }
-
-**The logic above will enforce role _and_ versioning restrictions.**
-
-## Prerequisites
-
-An account at https://zepher.io where you define requirements and download the object file. 
-
-## Installation
-
-This is the `PHP` version of the processor for the universal `zepher.json` object file.
-
-Install it via composer:
-
-    composer require deloachtech/zepher-php
-
-Or download the package at https://github.com/deloachtech/zepher-php.
-
-
-## Usage
 
 See https://zepher.io for more information.
-
