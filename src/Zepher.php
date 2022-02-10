@@ -17,19 +17,21 @@ class Zepher
     protected $accessValueObject;
 
     private $persistenceClass;
+    private $userRoles;
 
 
     /**
+     * @param string|null $domainId The current domain id.
      * @param mixed $accountId The active account id (if any).
-     * @param mixed $domainId The current domain id.
-     * @param object $persistenceClass Your class used to save account version information. (Must extend the
-     * PersistenceClassInterface)
+     * @param array|null $userRoles The current user roles (if any).
+     * @param object $persistenceClass Your class used to save account version information. (Must extend the PersistenceClassInterface)
      * @param string $objectFile The path to your zepher.json file.
      * @throws Exception
      */
     public function __construct(
-        $accountId,
         ?string $domainId,
+        $accountId,
+        ?array $userRoles,
         object $persistenceClass,
         string $objectFile
     )
@@ -50,6 +52,7 @@ class Zepher
             $this->persistenceClass->configFile($configFile);
 
             $this->domainId = $domainId;
+            $this->userRoles = $userRoles;
 
             $this->config = json_decode(file_get_contents($configFile), true);
 
@@ -301,27 +304,26 @@ class Zepher
      * provided, the method will return true if the user has at least one of the roles associated with the feature.
      *
      * @param string $feature
-     * @param array|null $userRoles
      * @param string|null $permission
      * @return bool
      */
-    public function userCanAccess(string $feature, ?array $userRoles, string $permission = null): bool
+    public function userCanAccess(string $feature, string $permission = null): bool
     {
         if (!$this->accessValueObject) {
             return false;
         }
 
-        // TODO: Replace in_array() usage with more efficient logic. (This method is frequently called.)
+        // TODO: Replace in_array() usage with more efficient logic. (This method is called frequently.)
 
         if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features'])) {
 
             if ($permission == null) {
 
                 // There's no permission set. Return true if the user has at least one of the roles.
-                return count(array_intersect(array_keys($this->config['data']['access'][$feature]), $userRoles ?? [])) > 0;
+                return count(array_intersect(array_keys($this->config['data']['access'][$feature]), $this->userRoles ?? [])) > 0;
             }
 
-            foreach ($userRoles as $role) {
+            foreach ($this->userRoles as $role) {
                 if (!empty($this->config['data']['access'][$feature][$role])) {
                     if (
                         in_array($permission, $this->config['data']['access'][$feature][$role]) ||
