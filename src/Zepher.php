@@ -24,19 +24,19 @@ class Zepher
      * @param mixed $domainId The current domain id.
      * @param object $persistenceClass Your class used to save account version information. (Must extend the
      * PersistenceClassInterface)
-     * @param string $configFileDirectory The directory (without the trailing slash) where your zepher.json and/or
-     * zepher_dev.json files exist.
+     * @param string $objectFile The path to your zepher.json file.
      * @throws Exception
      */
     public function __construct(
         $accountId,
         ?string $domainId,
         object $persistenceClass,
-        string $configFileDirectory = __DIR__
+        string $objectFile
     )
     {
-        $configFile = $configFileDirectory . DIRECTORY_SEPARATOR . 'zepher.json';
-        $devFile = $configFileDirectory . DIRECTORY_SEPARATOR . 'zepher_dev.json';
+        $info = pathinfo($objectFile);
+        $configFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher.json';
+        $devFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json';
 
         if (file_exists($devFile)) {
             $configFile = $devFile;

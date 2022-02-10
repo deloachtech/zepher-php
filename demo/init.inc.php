@@ -13,7 +13,7 @@ include "../src/Zepher.php";
 
 $session = json_decode(file_get_contents('session.json'), true) ?? [];
 
-$zepher = new Zepher($session['account']['id'], $session['account']['domain_id'], new FilesystemPersistence(), __DIR__);
+$zepher = new Zepher($session['account']['id'], $session['account']['domain_id'], new FilesystemPersistence(), 'zepher.json');
 
 function updateSession($session)
 {
