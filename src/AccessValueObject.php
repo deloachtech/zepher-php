@@ -5,6 +5,7 @@ namespace DeLoachTech\Zepher;
 class AccessValueObject
 {
     private $accountId;
+    private $domainId;
     private $versionId;
     private $activated;
     private $lastProcess;
@@ -21,6 +22,17 @@ class AccessValueObject
     public function getAccountId()
     {
         return $this->accountId;
+    }
+
+    public function getDomainId()
+    {
+        return $this->domainId;
+    }
+
+    public function setDomainId(string $domainId): self
+    {
+        $this->domainId = $domainId;
+        return $this;
     }
 
     public function getVersionId()

@@ -40,6 +40,7 @@ class RemotePersistence implements PersistenceClassInterface
     {
         if ($data = $this->getCachedValues($accessValueObject->getAccountId())) {
             $accessValueObject
+                ->setDomainId($data['domain_id'])
                 ->setVersionId($data['version_id'])
                 ->setActivated($data['activated'])
                 ->setLastProcess($data['last_process'])
@@ -52,6 +53,7 @@ class RemotePersistence implements PersistenceClassInterface
 
             if ($data = $response['data']) {
                 $accessValueObject
+                    ->setDomainId($data['domain_id'])
                     ->setVersionId($data['version_id'])
                     ->setActivated($data['activated'])
                     ->setLastProcess($data['last_process'])
@@ -68,6 +70,7 @@ class RemotePersistence implements PersistenceClassInterface
 
         $response = $this->curl($url, [
             'account_id' => $accessValueObject->getAccountId(),
+            'domain_id' => $accessValueObject->getDomainId(),
             'version_id' => $accessValueObject->getVersionId(),
             'activated' => $accessValueObject->getActivated(),
             'last_process' => $accessValueObject->getLastProcess(),
@@ -79,7 +82,7 @@ class RemotePersistence implements PersistenceClassInterface
                 ->setVersionId($data['version_id'])
                 ->setActivated($data['activated'])
                 ->setLastProcess($data['last_process'])
-                ->setClosed($data['closed']??null);
+                ->setClosed($data['closed'] ?? null);
 
             $this->setCachedValues($accessValueObject);
 

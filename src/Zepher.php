@@ -25,7 +25,7 @@ class Zepher
      * @param mixed $accountId The active account id (if any).
      * @param array|null $userRoles The current user roles (if any).
      * @param object $persistenceClass Your class used to save account version information. (Must extend the PersistenceClassInterface)
-     * @param string $objectFile The path to your zepher.json file.
+     * @param string $objectFile The zepher.json file.
      * @throws Exception
      */
     public function __construct(
@@ -36,15 +36,17 @@ class Zepher
         string $objectFile
     )
     {
-        $info = pathinfo($objectFile);
-        $configFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher.json';
-        $devFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json';
+        $configFile = self::getObjectFile($objectFile);
+//        $info = pathinfo($objectFile);
+//        $configFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher.json';
+//        $devFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json';
+//
+//        if (file_exists($devFile)) {
+//            $configFile = $devFile;
+//        } elseif (file_exists($configFile) == false) {
+//            throw new Exception('Unknown zepher object file ' . $configFile);
+//        }
 
-        if (file_exists($devFile)) {
-            $configFile = $devFile;
-        } elseif (file_exists($configFile) == false) {
-            throw new Exception('Unknown zepher config file ' . $configFile);
-        }
 
         if ($persistenceClass instanceof PersistenceClassInterface) {
 
@@ -80,6 +82,20 @@ class Zepher
         }
     }
 
+
+    public static function getObjectFile($objectFile): string
+    {
+        $info = pathinfo($objectFile);
+        $file = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher.json';
+        $devFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json';
+
+        if (file_exists($devFile)) {
+            $file = $devFile;
+        } elseif (file_exists($file) == false) {
+            throw new Exception('Unknown zepher object file ' . $file);
+        }
+        return $file;
+    }
 
     /**
      * Returns an array of versions for current domain.

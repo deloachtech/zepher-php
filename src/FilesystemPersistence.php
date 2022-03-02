@@ -35,6 +35,7 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
                 $end = end($versions);
 
                 $accessValueObject
+                    ->setDomainId($end['domain_id'])
                     ->setVersionId($end['version_id'] ?? null)
                     ->setActivated($end['activated'])
                     ->setLastProcess($end['last_process'] ?? null)
@@ -50,6 +51,7 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
         }
 
         $data[$accessValueObject->getAccountId()][] = [
+            'domain_id' => $accessValueObject->setDomainId(),
             'version_id' => $accessValueObject->getVersionId(),
             'activated' => $accessValueObject->getActivated()
         ];
@@ -77,6 +79,7 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
 
                 $accessValueObjects[] = (new AccessValueObject($accountId))
                     ->setActivated($values['activated'])
+                    ->setDomainId($values['domain_id'])
                     ->setVersionId($values['version_id'])
                     ->setLastProcess($values['last_processed'] ?? null);
             }
