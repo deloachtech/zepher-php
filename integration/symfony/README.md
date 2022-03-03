@@ -1,10 +1,6 @@
 # Symfony Integration
 
-Copy these classes into their respective directories.
+A Symfony bundle has been created to integrate Zepher. 
 
-    bin/console make:migration
-    bin/comsole doctrine:migrations:migrate
+[https://github.com/deloachtech/zepher-symfony](https://github.com/deloachtech/zepher-symfony)
 
-Provide the values in App\Service\ZepherService
-
-Everything else should be ready.
