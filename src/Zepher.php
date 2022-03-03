@@ -18,6 +18,7 @@ class Zepher
 
     private $persistenceClass;
     private $userRoles;
+    private $extra;
 
 
     /**
@@ -30,22 +31,25 @@ class Zepher
      */
     public function __construct(
         ?string $domainId,
-        $accountId,
-        ?array $userRoles,
-        object $persistenceClass,
-        string $objectFile
+                $accountId,
+        ?array  $userRoles,
+        object  $persistenceClass,
+        string  $objectFile
     )
     {
         $configFile = self::getObjectFile($objectFile);
-//        $info = pathinfo($objectFile);
-//        $configFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher.json';
-//        $devFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json';
-//
-//        if (file_exists($devFile)) {
-//            $configFile = $devFile;
-//        } elseif (file_exists($configFile) == false) {
-//            throw new Exception('Unknown zepher object file ' . $configFile);
-//        }
+
+        $info = pathinfo($objectFile);
+        $extraFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_extra.json';
+
+        if (file_exists($extraFile)) {
+            $extra = json_decode(file_get_contents($extraFile), true);
+            if (file_exists($info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json')) {
+                $this->extra = $extra['dev'] ?? [];
+            } else {
+                $this->extra = $extra['prod'] ?? [];
+            }
+        }
 
 
         if ($persistenceClass instanceof PersistenceClassInterface) {
@@ -54,7 +58,7 @@ class Zepher
             $this->persistenceClass->configFile($configFile);
 
             $this->domainId = $domainId;
-            $this->userRoles = $userRoles;
+            $this->userRoles = [$this->extra['impersonate_role']] ?? $userRoles;
 
             $this->config = json_decode(file_get_contents($configFile), true);
 
