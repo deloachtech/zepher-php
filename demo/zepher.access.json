@@ -1,28 +1,9 @@
 {
     "acc_gt253vdh374hdd32": [
         {
+            "domain_id": "dom_vkx8JpKemA7YVfMN",
             "version_id": "ver_Hv1Ar93gtcWXhqKd",
-            "activated": 1642650086
-        },
-        {
-            "version_id": "ver_vNGmYuKX2whpeDrJ",
-            "activated": 1642682617
-        },
-        {
-            "version_id": "ver_Hv1Ar93gtcWXhqKd",
-            "activated": 1642683051
-        },
-        {
-            "version_id": "ver_vNGmYuKX2whpeDrJ",
-            "activated": 1642683074
-        },
-        {
-            "version_id": "ver_Hv1Ar93gtcWXhqKd",
-            "activated": 1642683077
-        },
-        {
-            "version_id": "ver_vNGmYuKX2whpeDrJ",
-            "activated": 1642690964
+            "activated": 1646428931
         }
     ]
 }

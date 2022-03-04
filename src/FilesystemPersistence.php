@@ -51,7 +51,7 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
         }
 
         $data[$accessValueObject->getAccountId()][] = [
-            'domain_id' => $accessValueObject->setDomainId(),
+            'domain_id' => $accessValueObject->getDomainId(),
             'version_id' => $accessValueObject->getVersionId(),
             'activated' => $accessValueObject->getActivated()
         ];
@@ -91,5 +91,15 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
     public function getAccountIdsReadyForFeeProcessing(): array
     {
         // TODO: Implement getAccountIdsReadyForFeeProcessing() method.
+    }
+
+    public function config($config)
+    {
+        // TODO: Implement config() method.
+    }
+
+    public function deleteAccessValues($accountId): bool
+    {
+        // TODO: Implement deleteAccessValues() method.
     }
 }

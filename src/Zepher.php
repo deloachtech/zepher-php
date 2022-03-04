@@ -45,13 +45,14 @@ class Zepher
             $this->persistenceClass->config($config);
 
             $this->domainId = $config['extra']['impersonate_domain'] ?? $domainId;
+
             $this->userRoles = isset($config['extra']['impersonate_role']) ? (array)$config['extra']['impersonate_role'] : $userRoles;
             $accountId = $config['extra']['impersonate_account'] ?? $accountId;
 
             $this->config = $config['object'];
 
-            if (isset($domainId) && count($this->config['data']['domains'][$domainId]['versions']) == 0) {
-                throw new Exception('There are no versions assigned to domain "' . $domainId . '"');
+            if (isset($this->domainId) && count($this->config['data']['domains'][$this->domainId]['versions']) == 0) {
+                throw new Exception('There are no versions assigned to domain "' . $this->domainId . '"');
             }
 
             if (isset($accountId)) {
@@ -63,7 +64,8 @@ class Zepher
 
                     // The account does not yet have a version assigned, so set the default.
                     $this->accessValueObject
-                        ->setVersionId($this->getDomainDefaultVersionId($domainId))
+                        ->setDomainId($this->domainId)
+                        ->setVersionId($this->getDomainDefaultVersionId($this->domainId))
                         ->setActivated(time());
 
                     $this->updateValueObject($this->accessValueObject);

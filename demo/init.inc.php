@@ -13,6 +13,7 @@ include "../src/Zepher.php";
 
 $session = json_decode(file_get_contents('session.json'), true) ?? [];
 
+
 $zepher = new Zepher(
     $session['account']['domain_id'],
     $session['account']['id'],
