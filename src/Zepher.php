@@ -58,8 +58,8 @@ class Zepher
             $this->persistenceClass->configFile($configFile);
 
             $this->domainId = $this->extra['impersonate_domain'] ?? $domainId;
-            $this->userRoles = [$this->extra['impersonate_role']] ?? $userRoles;
-            $accountId = [$this->extra['impersonate_account']] ?? $accountId;
+            $this->userRoles = (array)$this->extra['impersonate_role'] ?? $userRoles;
+            $accountId = $this->extra['impersonate_account'] ?? $accountId;
 
             $this->config = json_decode(file_get_contents($configFile), true);
 
