@@ -18,6 +18,15 @@ interface FeeProcessorInterface
     public function configFile($configFile);
 
 
+
+    /**
+     * The current Zepher configuration. (In case you need it.)
+     *
+     * @param $config
+     */
+    public function config($config);
+
+
     /**
      * Your job is to process the fee(s) and return a bool indicating success.
      *

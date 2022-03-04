@@ -69,7 +69,7 @@ class FeeProvider
 
 
     /**
-     * Call this method when you wish to process fees.
+     * Call this method when you want to process fees.
      *
      * This method will fetch all accounts ready for processing. It will send each record for processing to the
      * processFees() method of tour fee processing class. Upon success, it will update the record status for the next

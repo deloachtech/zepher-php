@@ -18,7 +18,6 @@ class Zepher
 
     private $persistenceClass;
     private $userRoles;
-    private $extra;
 
 
     /**
@@ -37,31 +36,19 @@ class Zepher
         string  $objectFile
     )
     {
-        $configFile = self::getObjectFile($objectFile);
-
-        $info = pathinfo($objectFile);
-        $extraFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_extra.json';
-
-        if (file_exists($extraFile)) {
-            $extra = json_decode(file_get_contents($extraFile), true);
-            if (file_exists($info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json')) {
-                $this->extra = $extra['dev'] ?? [];
-            } else {
-                $this->extra = $extra['prod'] ?? [];
-            }
-        }
-
+        $config = self::getConfig($objectFile);
 
         if ($persistenceClass instanceof PersistenceClassInterface) {
 
             $this->persistenceClass = $persistenceClass;
-            $this->persistenceClass->configFile($configFile);
+            $this->persistenceClass->configFile($config['metadata']['object_file']);
+            $this->persistenceClass->config($config);
 
-            $this->domainId = $this->extra['impersonate_domain'] ?? $domainId;
-            $this->userRoles = (array)$this->extra['impersonate_role'] ?? $userRoles;
-            $accountId = $this->extra['impersonate_account'] ?? $accountId;
+            $this->domainId = $config['extra']['impersonate_domain'] ?? $domainId;
+            $this->userRoles = isset($config['extra']['impersonate_role']) ? (array)$config['extra']['impersonate_role'] : $userRoles;
+            $accountId = $config['extra']['impersonate_account'] ?? $accountId;
 
-            $this->config = json_decode(file_get_contents($configFile), true);
+            $this->config = $config['object'];
 
             if (isset($domainId) && count($this->config['data']['domains'][$domainId]['versions']) == 0) {
                 throw new Exception('There are no versions assigned to domain "' . $domainId . '"');
@@ -87,20 +74,44 @@ class Zepher
         }
     }
 
-
-    public static function getObjectFile($objectFile): string
+    public static function getConfig($objectFile): array
     {
         $info = pathinfo($objectFile);
-        $file = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher.json';
-        $devFile = $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json';
+        $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
+        $file = $dir . 'zepher.json';
+        $devFile = $dir . 'zepher_dev.json';
+        $extraFile = $dir . 'zepher_extra.json';
 
         if (file_exists($devFile)) {
             $file = $devFile;
         } elseif (file_exists($file) == false) {
             throw new Exception('Unknown zepher object file ' . $file);
         }
-        return $file;
+
+        $extra = [];
+
+        if (file_exists($extraFile)) {
+            $_extra = json_decode(file_get_contents($extraFile), true);
+            if ($file == $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json') {
+                $extra = $_extra['dev'] ?? [];
+            } else {
+                $extra = $_extra['prod'] ?? [];
+            }
+        }
+
+        return [
+            'object' => json_decode(file_get_contents($file), true),
+            'extra' => $extra,
+            'metadata' =>
+                [
+                    'object_path' => $info['dirname'],
+                    'object_file' => $file
+                ]
+        ];
+
+
     }
+
 
     /**
      * Returns an array of versions for current domain.
@@ -177,6 +188,21 @@ class Zepher
             ->setActivated(time());
         if (!$this->persistenceClass->setAccessValues($this->accessValueObject)) {
             throw new Exception('Failed to set account access version id.');
+        }
+        return true;
+    }
+
+
+    /**
+     * Passes the persistence class the account id for deleting records.
+     * @param $accountId
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteAccessValues($accountId): bool
+    {
+        if (!$this->persistenceClass->deleteAccessValues($this->accessValueObject)) {
+            throw new Exception('Failed to delete access records for account id ' . $accountId);
         }
         return true;
     }
