@@ -15,19 +15,28 @@ interface PersistenceClassInterface
 
 
     /**
-     * Your job is to set all the current object values from your data storage. (The account id is already set in the VO.)
+     * Your job is to create a new access record with the values and return a bool indicating success.
      *
      * @param AccessValueObject $accessValueObject
      */
-    public function getAccessValues(AccessValueObject $accessValueObject);
+    public function createAccessRecord(AccessValueObject $accessValueObject);
 
 
     /**
-     * Your job is to save the value object values and return a bool indicating success.
+     * Your job is to set all the current object values from your data storage. (The account id is already set in the VO.)
+     * If there are no values, a new access record will be created for the account id.
      *
      * @param AccessValueObject $accessValueObject
      */
-    public function setAccessValues(AccessValueObject $accessValueObject): bool;
+    public function getCurrentAccessRecord(AccessValueObject $accessValueObject);
+
+
+    /**
+     * Your job is to update the current access record with the new values and return a bool indicating success.
+     *
+     * @param AccessValueObject $accessValueObject
+     */
+    public function updateAccessRecord(AccessValueObject $accessValueObject): bool;
 
 
     /**
@@ -35,6 +44,6 @@ interface PersistenceClassInterface
      * @param $accountId
      * @return bool
      */
-    public function deleteAccessValues($accountId): bool;
+    public function deleteAccessRecords($accountId): bool;
 
 }

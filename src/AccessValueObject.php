@@ -29,7 +29,7 @@ class AccessValueObject
         return $this->domainId;
     }
 
-    public function setDomainId(string $domainId): self
+    public function setDomainId(?string $domainId): self
     {
         $this->domainId = $domainId;
         return $this;

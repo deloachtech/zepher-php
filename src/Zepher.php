@@ -41,7 +41,7 @@ class Zepher
 
             $info = pathinfo($objectFile);
             $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
-            $devFile = $dir . $info['filename'].'_dev.json';
+            $devFile = $dir . $info['filename'] . '_dev.json';
 
             $dev = [];
             if (file_exists($devFile)) {
@@ -64,64 +64,34 @@ class Zepher
 
             if (isset($accountId)) {
 
+                // There's a known account id (login is complete).
+
                 $this->accessValueObject = new AccessValueObject($accountId);
-                $persistenceClass->getAccessValues($this->accessValueObject);
+                $persistenceClass->getCurrentAccessRecord($this->accessValueObject);
 
-                if ($this->accessValueObject->getVersionId() == null) {
+                if (
+                    $this->accessValueObject->getActivated() == null || $this->accessValueObject->getDomainId() != $this->domainId) {
 
-                    // The account does not yet have a version assigned, so set the default.
-                    $this->accessValueObject
-                        ->setDomainId($this->domainId)
-                        ->setVersionId($this->getDomainDefaultVersionId($this->domainId))
-                        ->setActivated(time());
+                    // It's a new account or a new domain change on an existing account..
 
-                    $this->updateValueObject($this->accessValueObject);
+                    if (empty($this->domainId)) {
+
+                        throw new Exception("A domain id is required to create a new access record.");
+
+                    } else {
+                        $this->accessValueObject
+                            ->setDomainId($this->domainId)
+                            ->setActivated(time())
+                            ->setVersionId($this->getDomainDefaultVersionId($this->domainId));
+
+                        $this->createAccessRecord($this->accessValueObject);
+                    }
                 }
             }
         } else {
             throw new Exception('Persistence class must implement ' . __NAMESPACE__ . '\PersistenceClassInterface');
         }
     }
-
-//    public static function getConfig($objectFile): array
-//    {
-//        $info = pathinfo($objectFile);
-//        $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
-//        $file = $dir . 'zepher.json';
-//        $devFile = $dir . 'zepher_dev.json';
-//
-//
-//        $extraFile = $dir . 'zepher_extra.json';
-//
-//        if (file_exists($devFile)) {
-//            $file = $devFile;
-//        } elseif (file_exists($file) == false) {
-//            throw new Exception('Unknown zepher object file ' . $file);
-//        }
-//
-//        $extra = [];
-//
-//        if (file_exists($extraFile)) {
-//            $_extra = json_decode(file_get_contents($extraFile), true);
-//            if ($file == $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json') {
-//                $extra = $_extra['dev'] ?? [];
-//            } else {
-//                $extra = $_extra['prod'] ?? [];
-//            }
-//        }
-//
-//        return [
-//            'object' => json_decode(file_get_contents($file), true),
-//            'extra' => $extra,
-//            'metadata' =>
-//                [
-//                    'object_path' => $info['dirname'],
-//                    'object_file' => $file
-//                ]
-//        ];
-//
-//
-//    }
 
 
     /**
@@ -171,52 +141,43 @@ class Zepher
 
 
     /**
-     * Passes the persistence class values for saving.
-     *
      * @param AccessValueObject $accessValueObject
      * @return void
      * @throws Exception
      */
-    private function updateValueObject(AccessValueObject $accessValueObject)
+    public function createAccessRecord(AccessValueObject $accessValueObject)
     {
-        if (!$this->persistenceClass->setAccessValues($accessValueObject)) {
-            throw new Exception('Failed to save access value object.');
+        if (!$this->persistenceClass->createAccessRecord($accessValueObject)) {
+            throw new Exception('Failed to create access record.');
+        }
+    }
+
+    /**
+     * @param AccessValueObject $accessValueObject
+     * @return void
+     * @throws Exception
+     */
+    public function updateAccessRecord(AccessValueObject $accessValueObject)
+    {
+        if($accessValueObject->getVersionId() != $this->accessValueObject->getVersionId()){
+            $this->createAccessRecord($accessValueObject);
+        }else{
+            if (!$this->persistenceClass->updateAccessRecord($accessValueObject)) {
+                throw new Exception('Failed to update access record.');
+            }
         }
     }
 
 
     /**
-     * Sets the account version id using the persistence class.
-     *
-     * @param string $versionId
-     * @return bool
-     * @throws Exception
+     * Returns the current AccessValueObject.
+     * @return AccessValueObject
      */
-    public function setAccountVersionId(string $versionId): bool
+    public function getAccessValueObject(): AccessValueObject
     {
-        $this->accessValueObject
-            ->setVersionId($versionId)
-            ->setActivated(time());
-        if (!$this->persistenceClass->setAccessValues($this->accessValueObject)) {
-            throw new Exception('Failed to set account access version id.');
-        }
-        return true;
+        return $this->accessValueObject;
     }
 
-
-    /**
-     * Passes the persistence class the account id for deleting records.
-     * @param $accountId
-     * @return bool
-     * @throws Exception
-     */
-    public function deleteAccessValues($accountId): bool
-    {
-        if (!$this->persistenceClass->deleteAccessValues($this->accessValueObject)) {
-            throw new Exception('Failed to delete access records for account id ' . $accountId);
-        }
-        return true;
-    }
 
 
     /**

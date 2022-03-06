@@ -4,11 +4,13 @@ include "init.inc.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $current = $zepher->getAccountVersionId();
+    $current = $zepher->getAccessValueObject();
 
     if($_POST['version'] != $current) {
 
-        $zepher->setAccountVersionId($_POST['version']);
+        $current->setVersionId($_POST['version']);
+
+        $zepher->updateAccessRecord($current);
 
         // The default FilesystemPersistence class manages the version. For completeness, we'll update the "database"
         $session['account']['version_id'] = $_POST['version'];

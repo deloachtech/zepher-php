@@ -24,7 +24,7 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
     }
 
 
-    public function getAccessValues(AccessValueObject $accessValueObject)
+    public function getCurrentAccessRecord(AccessValueObject $accessValueObject)
     {
         if (file_exists($this->persistenceFile)) {
             $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
@@ -43,25 +43,6 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
             }
         }
     }
-
-    public function setAccessValues(AccessValueObject $accessValueObject): bool
-    {
-        if (file_exists($this->persistenceFile)) {
-            $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
-        }
-
-        $data[$accessValueObject->getAccountId()][] = [
-            'domain_id' => $accessValueObject->getDomainId(),
-            'version_id' => $accessValueObject->getVersionId(),
-            'activated' => $accessValueObject->getActivated()
-        ];
-
-        if (file_put_contents($this->persistenceFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
-            return false;
-        }
-        return true;
-    }
-
 
     public function getAccessValueObjects($accountId): array
     {
@@ -88,14 +69,45 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
 
     }
 
+    public function createAccessRecord(AccessValueObject $accessValueObject): bool
+    {
+        $data[$accessValueObject->getAccountId()][] = [
+            'domain_id' => $accessValueObject->getDomainId(),
+            'version_id' => $accessValueObject->getVersionId(),
+            'activated' => $accessValueObject->getActivated()
+        ];
+
+        if (file_put_contents($this->persistenceFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
+            return false;
+        }
+        return true;
+    }
+
+    public function updateAccessRecord(AccessValueObject $accessValueObject): bool
+    {
+        $data = json_decode(file_get_contents($this->persistenceFile) ?? [], true);
+        $data[$accessValueObject->getAccountId()][] = [
+            'domain_id' => $accessValueObject->getDomainId(),
+            'version_id' => $accessValueObject->getVersionId(),
+            'activated' => $accessValueObject->getActivated()
+        ];
+
+        if (file_put_contents($this->persistenceFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
+            return false;
+        }
+        return true;
+
+    }
+
+    public function deleteAccessRecords($accountId): bool
+    {
+        // TODO: Implement deleteAccessRecords() method.
+    }
+
     public function getAccountIdsReadyForFeeProcessing(): array
     {
         // TODO: Implement getAccountIdsReadyForFeeProcessing() method.
     }
 
 
-    public function deleteAccessValues($accountId): bool
-    {
-        // TODO: Implement deleteAccessValues() method.
-    }
 }

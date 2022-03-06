@@ -163,8 +163,23 @@ class RemotePersistence implements PersistenceClassInterface
     }
 
 
-    public function deleteAccessValues($accountId): bool
+    public function createAccessRecord(AccessValueObject $accessValueObject)
     {
-        // TODO: Implement deleteAccessValues() method.
+        // TODO: Implement createAccessRecord() method.
+    }
+
+    public function getCurrentAccessRecord(AccessValueObject $accessValueObject)
+    {
+        // TODO: Implement getCurrentAccessRecord() method.
+    }
+
+    public function updateAccessRecord(AccessValueObject $accessValueObject): bool
+    {
+        // TODO: Implement updateAccessRecord() method.
+    }
+
+    public function deleteAccessRecords($accountId): bool
+    {
+        // TODO: Implement deleteAccessRecords() method.
     }
 }
