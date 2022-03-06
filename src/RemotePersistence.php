@@ -31,9 +31,9 @@ class RemotePersistence implements PersistenceClassInterface
         $this->refreshCache();
     }
 
-    public function configFile($configFile)
+    public function objectFile($objectFile)
     {
-        $this->config = json_decode(file_get_contents($configFile) ?? [], true);
+        $this->config = json_decode(file_get_contents($objectFile) ?? [], true);
     }
 
     public function getAccessValues(AccessValueObject $accessValueObject)
@@ -163,4 +163,8 @@ class RemotePersistence implements PersistenceClassInterface
     }
 
 
+    public function deleteAccessValues($accountId): bool
+    {
+        // TODO: Implement deleteAccessValues() method.
+    }
 }

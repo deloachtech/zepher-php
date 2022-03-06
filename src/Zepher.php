@@ -25,7 +25,7 @@ class Zepher
      * @param mixed $accountId The active account id (if any).
      * @param array|null $userRoles The current user roles (if any).
      * @param object $persistenceClass Your class used to save account version information. (Must extend the PersistenceClassInterface)
-     * @param string $objectFile The zepher.json file.
+     * @param string $objectFile The zepher JSON object file.
      * @throws Exception
      */
     public function __construct(
@@ -36,20 +36,27 @@ class Zepher
         string  $objectFile
     )
     {
-        $config = self::getConfig($objectFile);
 
         if ($persistenceClass instanceof PersistenceClassInterface) {
 
+            $info = pathinfo($objectFile);
+            $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
+            $devFile = $dir . $info['filename'].'_dev.json';
+
+            $dev = [];
+            if (file_exists($devFile)) {
+                $dev = json_decode(file_get_contents($devFile), true);
+            }
+
             $this->persistenceClass = $persistenceClass;
-            $this->persistenceClass->configFile($config['metadata']['object_file']);
-            $this->persistenceClass->config($config);
+            $this->persistenceClass->objectFile($objectFile);
 
-            $this->domainId = $config['extra']['impersonate_domain'] ?? $domainId;
+            $this->domainId = $dev['impersonate']['domain'] ?? $domainId;
 
-            $this->userRoles = isset($config['extra']['impersonate_role']) ? (array)$config['extra']['impersonate_role'] : $userRoles;
-            $accountId = $config['extra']['impersonate_account'] ?? $accountId;
+            $this->userRoles = isset($dev['impersonate']['role']) ? (array)$dev['impersonate']['role'] : $userRoles;
+            $accountId = $dev['impersonate']['account'] ?? $accountId;
 
-            $this->config = $config['object'];
+            $this->config = json_decode(file_get_contents($objectFile), true);
 
             if (isset($this->domainId) && count($this->config['data']['domains'][$this->domainId]['versions']) == 0) {
                 throw new Exception('There are no versions assigned to domain "' . $this->domainId . '"');
@@ -76,43 +83,45 @@ class Zepher
         }
     }
 
-    public static function getConfig($objectFile): array
-    {
-        $info = pathinfo($objectFile);
-        $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
-        $file = $dir . 'zepher.json';
-        $devFile = $dir . 'zepher_dev.json';
-        $extraFile = $dir . 'zepher_extra.json';
-
-        if (file_exists($devFile)) {
-            $file = $devFile;
-        } elseif (file_exists($file) == false) {
-            throw new Exception('Unknown zepher object file ' . $file);
-        }
-
-        $extra = [];
-
-        if (file_exists($extraFile)) {
-            $_extra = json_decode(file_get_contents($extraFile), true);
-            if ($file == $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json') {
-                $extra = $_extra['dev'] ?? [];
-            } else {
-                $extra = $_extra['prod'] ?? [];
-            }
-        }
-
-        return [
-            'object' => json_decode(file_get_contents($file), true),
-            'extra' => $extra,
-            'metadata' =>
-                [
-                    'object_path' => $info['dirname'],
-                    'object_file' => $file
-                ]
-        ];
-
-
-    }
+//    public static function getConfig($objectFile): array
+//    {
+//        $info = pathinfo($objectFile);
+//        $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
+//        $file = $dir . 'zepher.json';
+//        $devFile = $dir . 'zepher_dev.json';
+//
+//
+//        $extraFile = $dir . 'zepher_extra.json';
+//
+//        if (file_exists($devFile)) {
+//            $file = $devFile;
+//        } elseif (file_exists($file) == false) {
+//            throw new Exception('Unknown zepher object file ' . $file);
+//        }
+//
+//        $extra = [];
+//
+//        if (file_exists($extraFile)) {
+//            $_extra = json_decode(file_get_contents($extraFile), true);
+//            if ($file == $info['dirname'] . DIRECTORY_SEPARATOR . 'zepher_dev.json') {
+//                $extra = $_extra['dev'] ?? [];
+//            } else {
+//                $extra = $_extra['prod'] ?? [];
+//            }
+//        }
+//
+//        return [
+//            'object' => json_decode(file_get_contents($file), true),
+//            'extra' => $extra,
+//            'metadata' =>
+//                [
+//                    'object_path' => $info['dirname'],
+//                    'object_file' => $file
+//                ]
+//        ];
+//
+//
+//    }
 
 
     /**

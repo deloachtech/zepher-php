@@ -16,9 +16,9 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
     private $persistenceFile;
 
 
-    public function configFile($configFile)
+    public function objectFile($objectFile)
     {
-        $info = pathinfo($configFile);
+        $info = pathinfo($objectFile);
         $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
         $this->persistenceFile = $dir . $info['filename'] . '.access.json';
     }
@@ -93,10 +93,6 @@ class FilesystemPersistence implements PersistenceClassInterface, FeeProviderPer
         // TODO: Implement getAccountIdsReadyForFeeProcessing() method.
     }
 
-    public function config($config)
-    {
-        // TODO: Implement config() method.
-    }
 
     public function deleteAccessValues($accountId): bool
     {

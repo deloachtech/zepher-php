@@ -11,20 +11,12 @@ interface FeeProcessorInterface
 {
 
     /**
-     * The current config zepher.json file being used. (In case you need it.)
+     * The current zepher object file being used. (In case you need it.)
      *
-     * @param $configFile
+     * @param $objectFile
      */
-    public function configFile($configFile);
+    public function objectFile($objectFile);
 
-
-
-    /**
-     * The current Zepher configuration. (In case you need it.)
-     *
-     * @param $config
-     */
-    public function config($config);
 
 
     /**

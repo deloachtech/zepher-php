@@ -32,36 +32,27 @@ class FeeProvider
     /**
      * @param object $feeProcessingClass
      * @param object $dataPersistenceClass
-     * @param string $configFileDirectory
+     * @param string $objectFile The zepher JSON object file.
      * @throws Exception
      */
     public function __construct(
         object $feeProcessingClass,
         object $dataPersistenceClass,
-        string $configFileDirectory = __DIR__
+        string $objectFile
     )
     {
-        $configFile = $configFileDirectory . DIRECTORY_SEPARATOR . 'zepher.json';
-        $devFile = $configFileDirectory . DIRECTORY_SEPARATOR . 'zepher_dev.json';
-
-        if (file_exists($devFile)) {
-            $configFile = $devFile;
-        } elseif (file_exists($configFile) == false) {
-            throw new Exception('Unknown zepher config file ' . $configFile);
-        }
-
-        $this->config = json_decode(file_get_contents($configFile), true);
+        $this->config = json_decode(file_get_contents($objectFile), true);
 
         if ($feeProcessingClass instanceof FeeProcessorInterface) {
             $this->feeProcessingClass = $feeProcessingClass;
-            $this->feeProcessingClass->configFile($configFile);
+            $this->feeProcessingClass->objectFile($objectFile);
         } else {
             throw new Exception('Fee processing class must implement ' . __NAMESPACE__ . '\FeeProviderInterface');
         }
 
         if ($dataPersistenceClass instanceof FeeProviderPersistenceInterface) {
             $this->dataPersistenceClass = $dataPersistenceClass;
-            $this->dataPersistenceClass->configFile($configFile);
+            $this->dataPersistenceClass->objectFile($objectFile);
         } else {
             throw new Exception('Data persistence class must implement ' . __NAMESPACE__ . '\FeeProviderPersistenceInterface');
         }
