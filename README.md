@@ -1,4 +1,4 @@
-# Zepher
+# Zepher for PHP
 
 This is the Zepher object processor for PHP.
 
