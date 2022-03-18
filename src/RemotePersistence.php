@@ -1,5 +1,16 @@
 <?php
 /**
+ * This file is part of the deloachtech/zepher-php package.
+ *
+ * (c) DeLoach Tech, LLC
+ * https://deloachtech.com
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
+/**
  * This class remotely stores account access data.
  *
  * Most accounts will rarely change their access version, yet the value is required on each request. This class caches

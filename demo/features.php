@@ -1,4 +1,13 @@
 <?php
+/**
+ * This file is part of the deloachtech/zepher-php package.
+ *
+ * (c) DeLoach Tech, LLC
+ * https://deloachtech.com
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 include "init.inc.php";
 

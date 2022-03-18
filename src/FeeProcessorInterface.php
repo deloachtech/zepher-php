@@ -1,5 +1,16 @@
 <?php
 /**
+ * This file is part of the deloachtech/zepher-php package.
+ *
+ * (c) DeLoach Tech, LLC
+ * https://deloachtech.com
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
+/**
  * The interface for your fee processing class.
  *
  * Create a fee processor class that implements this interface. Pass the class into the FeeProvider constructor (along with

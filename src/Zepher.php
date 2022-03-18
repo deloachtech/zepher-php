@@ -1,5 +1,16 @@
 <?php
 /**
+ * This file is part of the deloachtech/zepher-php package.
+ *
+ * (c) DeLoach Tech, LLC
+ * https://deloachtech.com
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
+/**
  * The zepher.json data processing class.
  *
  * Although fully functional, this class is provided to get things started. You can roll your own, or extend this one

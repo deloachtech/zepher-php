@@ -1,5 +1,16 @@
 <?php
 /**
+ * This file is part of the deloachtech/zepher-php package.
+ *
+ * (c) DeLoach Tech, LLC
+ * https://deloachtech.com
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
+/**
  * This class simply stores account access data using the filesystem.
  *
  * You should use a database persistence class implementing the PersistenceClassInterface provided. Pass your persistence
