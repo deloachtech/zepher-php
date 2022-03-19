@@ -1,6 +1,6 @@
 {
   "name": "deloachtech/zepher-php",
-  "description": "Domain and user access control for your codebase.",
+  "description": "This is the Zepher object processor for PHP. See https://zepher.io for more information.",
   "type": "library",
   "license": "MIT",
   "autoload": {
