@@ -1,7 +1,7 @@
 {
   "name": "deloachtech/zepher-php",
   "description": "This is the Zepher object processor for PHP. See https://zepher.io for more information.",
-  "type": "library",
+  "type": "deloachtech-package",
   "license": "MIT",
   "autoload": {
     "psr-4": {
@@ -9,7 +9,6 @@
     }
   },
   "require": {
-    "php": ">=7.2",
-    "deloachtech/package-installer": "1.0.*"
+    "php": ">=7.2"
   }
 }
