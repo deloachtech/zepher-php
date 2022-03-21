@@ -9,6 +9,7 @@
     }
   },
   "require": {
-    "php": ">=7.2"
+    "php": ">=7.2",
+    "deloachtech/package-installer": "1.0.*"
   }
 }
