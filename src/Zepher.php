@@ -30,6 +30,8 @@ class Zepher
     private $persistenceClass;
     private $userRoles;
 
+    private $devConfig;
+
 
     /**
      * @param string|null $domainId The current domain id.
@@ -54,18 +56,18 @@ class Zepher
             $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
             $devFile = $dir . $info['filename'] . '_dev.json';
 
-            $dev = [];
+            $this->devConfig = [];
             if (file_exists($devFile)) {
-                $dev = json_decode(file_get_contents($devFile), true);
+                $this->devConfig = json_decode(file_get_contents($devFile), true);
             }
 
             $this->persistenceClass = $persistenceClass;
             $this->persistenceClass->objectFile($objectFile);
 
-            $this->domainId = $dev['impersonate']['domain'] ?? $domainId;
+            $this->domainId = $this->devConfig['impersonate']['domain'] ?? $domainId;
 
-            $this->userRoles = isset($dev['impersonate']['role']) ? (array)$dev['impersonate']['role'] : $userRoles;
-            $accountId = $dev['impersonate']['account'] ?? $accountId;
+            $this->userRoles = isset($this->devConfig['impersonate']['role']) ? (array)$this->devConfig['impersonate']['role'] : $userRoles;
+            $accountId = $this->devConfig['impersonate']['account'] ?? $accountId;
 
             $this->config = json_decode(file_get_contents($objectFile), true);
 
@@ -83,7 +85,7 @@ class Zepher
                 if (
                     $this->accessValueObject->getActivated() == null || $this->accessValueObject->getDomainId() != $this->domainId) {
 
-                    // It's a new account or a new domain change on an existing account..
+                    // It's a new account, or a new domain change on an existing account.
 
                     if (empty($this->domainId)) {
 
@@ -343,7 +345,13 @@ class Zepher
             return false;
         }
 
-        // TODO: Replace in_array() usage with more efficient logic. (This method is called frequently.)
+        if(isset($this->devConfig['feature_access']['*'])){
+            return ($this->devConfig['feature_access']['*'] == '*' || in_array($this->devConfig['feature_access']['*'],$this->userRoles));
+        }elseif (isset($this->devConfig['feature_access'][$feature])){
+            return ($this->devConfig['feature_access'][$feature] == '*' || in_array($this->devConfig['feature_access'][$feature],$this->userRoles));
+        }
+
+        // TODO: Replace in_array() usage with more efficient logic. (This method gets called frequently.)
 
         if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features'])) {
 
