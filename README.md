@@ -3,7 +3,9 @@ Zepher for PHP
 
 [Zepher](https://zepher.io) integrates RBAC, SaaS, Customer networking and fee-based app versioning into your existing codebase.
 
-This PHP version of the `zepher.json` object processor.
+This is the vanilla PHP version of the `zepher.json` object processor.
+
+> There's a [Symfony bundle version](https://github.com/deloachtech/zepher-symfony) of this package.
 
 Installation
 ------------
