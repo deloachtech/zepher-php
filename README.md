@@ -1,6 +1,9 @@
-# Zepher for PHP
+Zepher for PHP
+==============
 
-This is the [Zepher](https://zepher.io) object processor for PHP.
+[Zepher](https://zepher.io) integrates RBAC, SaaS, Customer networking and fee-based app versioning into your existing codebase.
+
+This PHP version of the `zepher.json` object processor.
 
 Installation
 ------------
