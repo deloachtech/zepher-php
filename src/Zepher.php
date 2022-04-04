@@ -70,18 +70,12 @@ class Zepher
                 if (isset($this->devConfig['simulate']['role'])) {
                     $this->userRoles = (array)$this->devConfig['simulate']['role'];
                 }
-//                if (isset($this->devConfig['simulate']['account'])) {
-                    $accountId = 'dev-mode';
-//                    $accountId = $this->devConfig['simulate']['account'];
-//                }
+                $accountId = 'dev-mode';
             }
 
             $this->persistenceClass = $persistenceClass;
             $this->persistenceClass->objectFile($objectFile);
 
-//            $this->domainId = $this->devConfig['simulate']['domain'] ?? $domainId;
-//            $this->userRoles = isset($this->devConfig['simulate']['role']) ? (array)$this->devConfig['simulate']['role'] : $userRoles;
-//            $accountId = $this->devConfig['simulate']['account'] ?? $accountId;
 
             $this->config = json_decode(file_get_contents($objectFile), true);
 
