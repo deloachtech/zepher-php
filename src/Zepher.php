@@ -87,28 +87,39 @@ class Zepher
 
                 // There's a known account id (login is complete).
 
-                if (empty($this->domainId)) {
-                    throw new Exception("A domain id is required when an account id is provided.");
-                }
-
                 $this->accessValueObject = new AccessValueObject($accountId);
 
                 if ($this->devMode) {
+
+                    if (empty($this->domainId)) {
+                        throw new Exception("A domain id is required when in dev mode.");
+                    }
 
                     $this->accessValueObject
                         ->setDomainId($this->domainId)
                         ->setActivated(time())
                         ->setVersionId($this->devConfig['simulate']['account'] ?? $this->getDomainDefaultVersionId($this->domainId));
+
                 } else {
 
                     $persistenceClass->getCurrentAccessRecord($this->accessValueObject);
 
+                    $this->domainId = $this->accessValueObject->getDomainId();
+
+                    if (empty($this->domainId)) {
+                        throw new Exception("A AccessValueObject domain id is required.");
+                    }
+
                     if (
                         $this->accessValueObject->getActivated() == null ||
-                        $this->accessValueObject->getDomainId() != $this->domainId
+                        $this->domainId != $domainId
                     ) {
 
                         // It's a new account, or a domain change on an existing account.
+
+                        if (empty($domainId)) {
+                            throw new Exception("A domain id is required when a new access record is being created.");
+                        }
 
                         $this->accessValueObject
                             ->setDomainId($this->domainId)
