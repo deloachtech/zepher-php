@@ -30,7 +30,8 @@ class Zepher
     private $persistenceClass;
     private $userRoles;
 
-    private $devConfig;
+    private $devConfig = [];
+    private $devMode = false;
 
 
     /**
@@ -56,18 +57,31 @@ class Zepher
             $dir = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '');
             $devFile = $dir . $info['filename'] . '_dev.json';
 
-            $this->devConfig = [];
+            $this->domainId = $domainId;
+            $this->userRoles = $userRoles;
+
             if (file_exists($devFile)) {
+
+                $this->devMode = true;
+
                 $this->devConfig = json_decode(file_get_contents($devFile), true);
+                $this->domainId = $this->devConfig['simulate']['domain'];
+
+                if (isset($this->devConfig['simulate']['role'])) {
+                    $this->userRoles = (array)$this->devConfig['simulate']['role'];
+                }
+//                if (isset($this->devConfig['simulate']['account'])) {
+                    $accountId = 'dev-mode';
+//                    $accountId = $this->devConfig['simulate']['account'];
+//                }
             }
 
             $this->persistenceClass = $persistenceClass;
             $this->persistenceClass->objectFile($objectFile);
 
-            $this->domainId = $this->devConfig['impersonate']['domain'] ?? $domainId;
-
-            $this->userRoles = isset($this->devConfig['impersonate']['role']) ? (array)$this->devConfig['impersonate']['role'] : $userRoles;
-            $accountId = $this->devConfig['impersonate']['account'] ?? $accountId;
+//            $this->domainId = $this->devConfig['simulate']['domain'] ?? $domainId;
+//            $this->userRoles = isset($this->devConfig['simulate']['role']) ? (array)$this->devConfig['simulate']['role'] : $userRoles;
+//            $accountId = $this->devConfig['simulate']['account'] ?? $accountId;
 
             $this->config = json_decode(file_get_contents($objectFile), true);
 
@@ -79,19 +93,29 @@ class Zepher
 
                 // There's a known account id (login is complete).
 
+                if (empty($this->domainId)) {
+                    throw new Exception("A domain id is required when an account id is provided.");
+                }
+
                 $this->accessValueObject = new AccessValueObject($accountId);
-                $persistenceClass->getCurrentAccessRecord($this->accessValueObject);
 
-                if (
-                    $this->accessValueObject->getActivated() == null || $this->accessValueObject->getDomainId() != $this->domainId) {
+                if ($this->devMode) {
 
-                    // It's a new account, or a new domain change on an existing account.
+                    $this->accessValueObject
+                        ->setDomainId($this->domainId)
+                        ->setActivated(time())
+                        ->setVersionId($this->devConfig['simulate']['account'] ?? $this->getDomainDefaultVersionId($this->domainId));
+                } else {
 
-                    if (empty($this->domainId)) {
+                    $persistenceClass->getCurrentAccessRecord($this->accessValueObject);
 
-                        throw new Exception("A domain id is required to create a new access record.");
+                    if (
+                        $this->accessValueObject->getActivated() == null ||
+                        $this->accessValueObject->getDomainId() != $this->domainId
+                    ) {
 
-                    } else {
+                        // It's a new account, or a domain change on an existing account.
+
                         $this->accessValueObject
                             ->setDomainId($this->domainId)
                             ->setActivated(time())
@@ -160,8 +184,10 @@ class Zepher
      */
     public function createAccessRecord(AccessValueObject $accessValueObject)
     {
-        if (!$this->persistenceClass->createAccessRecord($accessValueObject)) {
-            throw new Exception('Failed to create access record.');
+        if (!$this->devMode) {
+            if (!$this->persistenceClass->createAccessRecord($accessValueObject)) {
+                throw new Exception('Failed to create access record.');
+            }
         }
     }
 
@@ -172,11 +198,13 @@ class Zepher
      */
     public function updateAccessRecord(AccessValueObject $accessValueObject)
     {
-        if($accessValueObject->getVersionId() != $this->accessValueObject->getVersionId()){
-            $this->createAccessRecord($accessValueObject);
-        }else{
-            if (!$this->persistenceClass->updateAccessRecord($accessValueObject)) {
-                throw new Exception('Failed to update access record.');
+        if (!$this->devMode) {
+            if ($accessValueObject->getVersionId() != $this->accessValueObject->getVersionId()) {
+                $this->createAccessRecord($accessValueObject);
+            } else {
+                if (!$this->persistenceClass->updateAccessRecord($accessValueObject)) {
+                    throw new Exception('Failed to update access record.');
+                }
             }
         }
     }
@@ -190,7 +218,6 @@ class Zepher
     {
         return $this->accessValueObject;
     }
-
 
 
     /**
@@ -345,10 +372,10 @@ class Zepher
             return false;
         }
 
-        if(isset($this->devConfig['feature_access']['*'])){
-            return ($this->devConfig['feature_access']['*'] == '*' || in_array($this->devConfig['feature_access']['*'],$this->userRoles));
-        }elseif (isset($this->devConfig['feature_access'][$feature])){
-            return ($this->devConfig['feature_access'][$feature] == '*' || in_array($this->devConfig['feature_access'][$feature],$this->userRoles));
+        if (isset($this->devConfig['feature_access']['*'])) {
+            return ($this->devConfig['feature_access']['*'] == '*' || in_array($this->devConfig['feature_access']['*'], $this->userRoles));
+        } elseif (isset($this->devConfig['feature_access'][$feature])) {
+            return ($this->devConfig['feature_access'][$feature] == '*' || in_array($this->devConfig['feature_access'][$feature], $this->userRoles));
         }
 
         // TODO: Replace in_array() usage with more efficient logic. (This method gets called frequently.)
