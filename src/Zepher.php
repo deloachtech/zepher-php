@@ -319,9 +319,10 @@ class Zepher
     public function getRolesById(array $roleIds): array
     {
         $roles = [];
+        $haystack = array_flip($this->config['data']['versions'][$this->accessValueObject->getVersionId()]['roles']??[]);
         foreach ($roleIds as $roleId) {
-            if (isset($this->config['data']['version'][$this->accessValueObject->getVersionId()]['roles'][$roleId])) {
-                $roles[$roleId] = $this->config['data']['roles'][$roleId];
+            if (isset($haystack[$roleId])) {
+                $roles[$roleId] = $this->config['data']['roles'][$roleId]['title'];
             }
         }
         asort($roles);
