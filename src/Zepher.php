@@ -378,8 +378,10 @@ class Zepher
             return false;
         }
 
-        if(in_array($feature, $this->devConfig['features_deny'] ??[])){
-            return false;
+        if(isset($this->devConfig['features_deny'])){
+            if(in_array('*', $this->devConfig['features_deny']) || in_array($feature, $this->devConfig['features_deny'])){
+                return false;
+            }
         }
 
         if (isset($this->devConfig['feature_access']['*'])) {
