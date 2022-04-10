@@ -137,14 +137,14 @@ class Zepher
 
 
     /**
-     * Returns an array of versions for current domain.
+     * Returns an array of versions for current domain (or the domain id provided).
      *
      * @return array
      */
-    public function getDomainVersions(): array
+    public function getDomainVersions(string $domainId = null): array
     {
         $versions = [];
-        foreach ($this->config['data']['domains'][$this->domainId]['versions'] as $id) {
+        foreach ($this->config['data']['domains'][$domainId ?? $this->domainId]['versions'] as $id) {
             $versions[] = $this->config['data']['versions'][$id];
         }
         return $versions;
@@ -249,26 +249,26 @@ class Zepher
 
 
     /**
-     * Returns the current domain data.
+     * Returns domain data for the current domain (or the domain id provided).
      *
      * @return array
      */
-    public function getDomain(): array
+    public function getDomain(string $domainId = null): array
     {
-        return $this->config['data']['domains'][$this->domainId] ?? [];
+        return $this->config['data']['domains'][$domainId ?? $this->domainId] ?? [];
     }
 
 
     /**
-     * Returns the current domain network.
+     * Returns the network of the current domain  (or the domain id provided).
      *
      * @return array
      */
-    public function getDomainNetwork(): array
+    public function getDomainNetwork(string $domainId = null): array
     {
         $domains = [];
 
-        foreach ($this->config['data']['domains'][$this->domainId]['network'] ?? [] as $id) {
+        foreach ($this->config['data']['domains'][$domainId ?? $this->domainId]['network'] ?? [] as $id) {
 
             $domains[$id] = [
                 'id' => $id,
@@ -438,11 +438,11 @@ class Zepher
 
 
     /**
-     * Returns an array of module ids associated with a domain.
+     * Returns an array of module ids associated with the current domain version.
      *
      * @return array
      */
-    public function getDomainModules(): array
+    public function getActiveModules(): array
     {
         return $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['modules'] ?? [];
     }
