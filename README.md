@@ -20,4 +20,4 @@ Or download it for incorporation into your existing codebase.
 Usage
 -----
 
-See [zepher.io/docs](https://zepher.io/docs).
+See [docs.zepher.io](https://docs.zepher.io).
