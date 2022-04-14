@@ -374,6 +374,8 @@ class Zepher
      */
     public function userCanAccess(string $feature, string $permission = null): bool
     {
+        // TODO: Replace all in_array() usage with more efficient logic. (This method gets called frequently.)
+
         if (!$this->accessValueObject) {
             return false;
         }
@@ -384,15 +386,16 @@ class Zepher
             }
         }
 
-        if (isset($this->devConfig['feature_access']['*'])) {
-            return ($this->devConfig['feature_access']['*'] == '*' || in_array($this->devConfig['feature_access']['*'], $this->userRoles));
-        } elseif (isset($this->devConfig['feature_access'][$feature])) {
-            return ($this->devConfig['feature_access'][$feature] == '*' || in_array($this->devConfig['feature_access'][$feature], $this->userRoles));
-        }
-
-        // TODO: Replace in_array() usage with more efficient logic. (This method gets called frequently.)
-
         if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features'])) {
+
+            // Application logic requiring non-existent features may error.
+            // Make sure the feature even exists before granting dev permission.
+            if (isset($this->devConfig['feature_access']['*'])) {
+                return ($this->devConfig['feature_access']['*'] == '*' || in_array($this->devConfig['feature_access']['*'], $this->userRoles));
+            } elseif (isset($this->devConfig['feature_access'][$feature])) {
+                return ($this->devConfig['feature_access'][$feature] == '*' || in_array($this->devConfig['feature_access'][$feature], $this->userRoles));
+            }
+
 
             if ($permission == null) {
 
