@@ -95,30 +95,23 @@ class Zepher
                         throw new Exception("A domain id is required when in dev mode.");
                     }
 
+                    // Initialize this->accessValueObject for dev mode.
                     $this->accessValueObject
                         ->setDomainId($this->domainId)
                         ->setActivated(time())
-                        ->setVersionId($this->devConfig['simulate']['account'] ?? $this->getDomainDefaultVersionId($this->domainId));
+                        ->setVersionId($this->devConfig['simulate']['version'] ?? $this->getDomainDefaultVersionId($this->domainId));
 
                 } else {
 
+                    // Initialize this->accessValueObject.
                     $persistenceClass->getCurrentAccessRecord($this->accessValueObject);
 
-                    $this->domainId = $this->accessValueObject->getDomainId();
+                    if ($this->accessValueObject->getActivated() == null) {
 
-                    if (empty($this->domainId)) {
-                        throw new Exception("A AccessValueObject domain id is required.");
-                    }
+                        // New account with no access record.
 
-                    if (
-                        $this->accessValueObject->getActivated() == null ||
-                        $this->domainId != $domainId
-                    ) {
-
-                        // It's a new account, or a domain change on an existing account.
-
-                        if (empty($domainId)) {
-                            throw new Exception("A domain id is required when a new access record is being created.");
+                        if(empty($this->domainId)){
+                            throw new Exception('There must be a domain id provided for a new account.');
                         }
 
                         $this->accessValueObject
@@ -127,7 +120,15 @@ class Zepher
                             ->setVersionId($this->getDomainDefaultVersionId($this->domainId));
 
                         $this->createAccessRecord($this->accessValueObject);
+
+                    } else {
+
+                        // Existing account...
+
+                        $this->domainId = $this->accessValueObject->getDomainId(); // In case one was not available during initialization.
+
                     }
+
                 }
             }
         } else {
@@ -319,7 +320,7 @@ class Zepher
     public function getRolesById(array $roleIds): array
     {
         $roles = [];
-        $haystack = array_flip($this->config['data']['versions'][$this->accessValueObject->getVersionId()]['roles']??[]);
+        $haystack = array_flip($this->config['data']['versions'][$this->accessValueObject->getVersionId()]['roles'] ?? []);
         foreach ($roleIds as $roleId) {
             if (isset($haystack[$roleId])) {
                 $roles[$roleId] = $this->config['data']['roles'][$roleId]['title'];
@@ -380,8 +381,8 @@ class Zepher
             return false;
         }
 
-        if(isset($this->devConfig['features_deny'])){
-            if(in_array('*', $this->devConfig['features_deny']) || in_array($feature, $this->devConfig['features_deny'])){
+        if (isset($this->devConfig['features_deny'])) {
+            if (in_array('*', $this->devConfig['features_deny']) || in_array($feature, $this->devConfig['features_deny'])) {
                 return false;
             }
         }

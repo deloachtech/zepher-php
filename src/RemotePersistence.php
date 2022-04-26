@@ -16,10 +16,8 @@
  * Most accounts will rarely change their access version, yet the value is required on each request. This class caches
  * the remotely stored version data until the account changes their version.
  *
- * The cache refreshes every hour.
- *
- * The difference between this and filesystem persistence is the data integrity. If the filesystem file is lost, so is
- * the data for *every* account, resulting in each account being re-assigned the default version.
+ * The cache refreshes every hour. It's not an issue if the cache file is missing, as it will just get rebuilt with
+ * the most current values.
  *
  * You should exclude the cache file in your deployment strategy.
  */
