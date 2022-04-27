@@ -1,12 +1,13 @@
 {
     "account": {
         "id": "acc_gt253vdh374hdd32",
-        "domain_id": "dom_vkx8JpKemA7YVfMN"
+        "domain_id": "dom_vkx8JpKemA7YVfMN",
+        "version_id": "ver_pWm2hYq51aduJsKP"
     },
     "user": {
         "roles": [
-            "rol_ZASaTvWUgDPskCGh",
-            "rol_CxcX5EkMvwUJDYyz"
+            "rol_CxcX5EkMvwUJDYyz",
+            "rol_AmDbfcMTvRrVnB6t"
         ]
     }
 }

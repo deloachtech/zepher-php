@@ -35,11 +35,11 @@ $current = array_flip($session['user']['roles'] ?? []);
 
 <form method="post">
 
-    <?php foreach ($zepher->getRoles()??[] as $role) { ?>
+    <?php foreach ($zepher->getRoles()??[] as $id => $role) { ?>
 
     <div>
         <label>
-            <input type="checkbox" class="check" name="roles[]" <?= isset($current[$role['id']]) ? 'checked="checked"' : '' ?> value="<?= $role['id'] ?>"><?= $role['title'] ?>
+            <input type="checkbox" class="check" name="roles[]" <?= isset($current[$id]) ? 'checked="checked"' : '' ?> value="<?= $id ?>"><?= $role['title'] ?>
         </label>
     </div>
 

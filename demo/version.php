@@ -29,7 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("location: versions.php");
 }
 
-$current = $zepher->getVersion()['id'];
+$current = key($zepher->getVersion());
+
+
 ?>
 <html lang="en">
 <head>
@@ -48,8 +50,8 @@ $current = $zepher->getVersion()['id'];
     <div>
         <label>
             <select name="version" class="select">
-                <?php foreach ($zepher->getDomainVersions() as $version) { ?>
-                    <option <?= $current == $version['id'] ? 'selected="selected"' : '' ?> value="<?= $version['id'] ?>"><?= $version['title'] ?></option>
+                <?php foreach ($zepher->getDomainVersions() as $id => $version) { ?>
+                    <option <?= $current == $id ? 'selected="selected"' : '' ?> value="<?= $id ?>"><?= $version['title'] ?></option>
                 <?php } ?>
             </select>
         </label>

@@ -6,16 +6,11 @@
   ],
   "data": {
     "app": {
-      "id": "app_vdkhAr1QWeT2jwta",
       "title": "Zepher Demo",
-      "desc": "Zepher Demo Application",
-      "api_key": "9e1ac8d4bbf6934ea2b7ba1bbe55e5fa497a4951d5544a5569ac3d3df4772eb6",
-      "version_id": "",
       "permission_all": "PERMISSION_*"
     },
     "domains": {
       "dom_vkx8JpKemA7YVfMN": {
-        "id": "dom_vkx8JpKemA7YVfMN",
         "title": "Domain 1",
         "desc": "Demo app domain",
         "signup": true,
@@ -31,7 +26,6 @@
         ]
       },
       "dom_E3rAqjaVcJSw2zCQ": {
-        "id": "dom_E3rAqjaVcJSw2zCQ",
         "title": "Domain 2",
         "desc": "Demo app domain",
         "signup": false,
@@ -46,7 +40,6 @@
         ]
       },
       "dom_YprFaJuxmb31PZ4U": {
-        "id": "dom_YprFaJuxmb31PZ4U",
         "title": "Domain 3",
         "desc": "Demo app domain",
         "signup": false,
@@ -60,17 +53,14 @@
     },
     "roles": {
       "rol_AmDbfcMTvRrVnB6t": {
-        "id": "rol_AmDbfcMTvRrVnB6t",
         "title": "System Administrator",
         "desc": "Can do almost anything."
       },
       "rol_CxcX5EkMvwUJDYyz": {
-        "id": "rol_CxcX5EkMvwUJDYyz",
         "title": "Super User",
         "desc": "Can do anything."
       },
       "rol_ZASaTvWUgDPskCGh": {
-        "id": "rol_ZASaTvWUgDPskCGh",
         "title": "President (CEO)",
         "desc": null
       }
@@ -103,15 +93,11 @@
     "fees": [],
     "versions": {
       "ver_Hv1Ar93gtcWXhqKd": {
-        "id": "ver_Hv1Ar93gtcWXhqKd",
         "tag": "demo.1",
         "title": "Basic",
         "desc": "Core application features",
         "fee_process_strings": [],
         "fee_desc": null,
-        "modules": [
-          "MODULE_CORE"
-        ],
         "roles": [
           "rol_AmDbfcMTvRrVnB6t",
           "rol_CxcX5EkMvwUJDYyz",
@@ -123,7 +109,6 @@
         ]
       },
       "ver_vNGmYuKX2whpeDrJ": {
-        "id": "ver_vNGmYuKX2whpeDrJ",
         "tag": "demo.2",
         "title": "Plus",
         "desc": "Basic version + account networking",
@@ -131,9 +116,6 @@
           "monthlyUse|9|0|0"
         ],
         "fee_desc": "$9\/month",
-        "modules": [
-          "MODULE_CORE"
-        ],
         "roles": [
           "rol_AmDbfcMTvRrVnB6t",
           "rol_CxcX5EkMvwUJDYyz",
@@ -145,7 +127,6 @@
         ]
       },
       "ver_pWm2hYq51aduJsKP": {
-        "id": "ver_pWm2hYq51aduJsKP",
         "tag": "demo.3",
         "title": "Premium",
         "desc": "Plus version + the ability to collect network fees",
@@ -154,9 +135,6 @@
           "percentOfCharge|10|0|0"
         ],
         "fee_desc": "Plus fees + 10% fee collected",
-        "modules": [
-          "MODULE_CORE"
-        ],
         "roles": [
           "rol_AmDbfcMTvRrVnB6t",
           "rol_CxcX5EkMvwUJDYyz",

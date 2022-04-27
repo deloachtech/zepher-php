@@ -11,7 +11,7 @@
 
 include "init.inc.php";
 
-$current = $zepher->getVersion();
+$current = key($zepher->getVersion());
 ?>
 <html lang="en">
 <head>
@@ -36,12 +36,12 @@ $current = $zepher->getVersion();
     </tr>
     </thead>
 
-    <?php foreach ($zepher->getDomainVersions()??[] as $version) { ?>
+    <?php foreach ($zepher->getDomainVersions() ?? [] as $id => $version) { ?>
 
         <tr>
-            <td><?= $version['title'] ?><?= $current['id'] == $version['id'] ? ' *' : '' ?></td>
+            <td><?= $version['title'] ?><?= $current == $id ? ' *' : '' ?></td>
             <td><?= $version['desc'] ?></td>
-            <td><?= implode(', ', $version['fees']??[]) ?></td>
+            <td><?= implode(', ', $version['fees'] ?? []) ?></td>
             <td><?= $version['fee_desc'] ?></td>
 
         </tr>

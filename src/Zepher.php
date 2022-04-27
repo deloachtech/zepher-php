@@ -110,7 +110,7 @@ class Zepher
 
                         // New account with no access record.
 
-                        if(empty($this->domainId)){
+                        if (empty($this->domainId)) {
                             throw new Exception('There must be a domain id provided for a new account.');
                         }
 
@@ -146,7 +146,7 @@ class Zepher
     {
         $versions = [];
         foreach ($this->config['data']['domains'][$domainId ?? $this->domainId]['versions'] as $id) {
-            $versions[] = $this->config['data']['versions'][$id];
+            $versions[$id] = $this->config['data']['versions'][$id];
         }
         return $versions;
     }
@@ -245,7 +245,10 @@ class Zepher
      */
     public function getVersionById(string $versionId): array
     {
-        return $this->config['data']['versions'][$versionId] ?? [];
+        if ($data = $this->config['data']['versions'][$versionId] ?? []) {
+            return [$versionId => $data];
+        }
+        return [];
     }
 
 
@@ -256,7 +259,10 @@ class Zepher
      */
     public function getDomain(string $domainId = null): array
     {
-        return $this->config['data']['domains'][$domainId ?? $this->domainId] ?? [];
+        if ($data = $this->config['data']['domains'][$domainId ?? $this->domainId] ?? []) {
+            return [$domainId => $data];
+        }
+        return [];
     }
 
 
@@ -288,7 +294,10 @@ class Zepher
      */
     public function getVersion(): array
     {
-        return $this->config['data']['versions'][$this->accessValueObject->getVersionId()] ?? [];
+        if ($data = $this->config['data']['versions'][$this->accessValueObject->getVersionId()] ?? []) {
+            return [$this->accessValueObject->getVersionId() => $data];
+        }
+        return [];
     }
 
 
@@ -301,9 +310,9 @@ class Zepher
     {
         $roles = [];
         foreach ($this->config['data']['versions'][$this->accessValueObject->getVersionId()]['roles'] ?? [] as $id) {
-            $roles[] = $this->config['data']['roles'][$id];
+            $roles[$id] = $this->config['data']['roles'][$id];
         }
-        usort($roles, function ($a, $b) {
+        uasort($roles, function ($a, $b) {
             return $a['title'] <=> $b['title'];
         });
         return $roles;
@@ -429,38 +438,14 @@ class Zepher
     public function getUserFeaturePermissions(string $featureId, array $roleIds): array
     {
         $ret = [];
-        foreach ($this->config['data']['access'][$featureId] as $roleId => $arr) {
+        foreach ($this->config['data']['access'][$featureId] as $roleId => $permissions) {
             if (in_array($roleId, $roleIds)) {
-                foreach ($arr as $permissionId) {
+                foreach ($permissions as $permissionId) {
                     $ret[$permissionId] = 1;
                 }
             }
         }
         ksort($ret);
         return array_keys($ret);
-    }
-
-
-    /**
-     * Returns an array of module ids associated with the current domain version.
-     *
-     * @return array
-     */
-    public function getActiveModules(): array
-    {
-        return $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['modules'] ?? [];
-    }
-
-
-    /**
-     * Method for determining if a module is active in the current environment. Useful for determining module related
-     * events and information (i.e. tips and alerts).
-     *
-     * @param string $moduleId
-     * @return bool
-     */
-    public function moduleIsActive(string $moduleId): bool
-    {
-        return in_array($moduleId, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['modules']);
     }
 }
