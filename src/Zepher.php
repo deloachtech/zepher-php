@@ -367,7 +367,7 @@ class Zepher
                 }
             }
         }
-        usort($a, function ($a, $b) use ($sortKey) {
+        uasort($a, function ($a, $b) use ($sortKey) {
             return $a[$sortKey] <=> $b[$sortKey];
         });
         return $a;
