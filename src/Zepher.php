@@ -396,7 +396,7 @@ class Zepher
             }
         }
 
-        if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features'])) {
+        if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features']??[])) {
 
             // Application logic requiring non-existent features may error.
             // Make sure the feature even exists before granting dev permission.
