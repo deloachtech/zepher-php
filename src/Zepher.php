@@ -396,6 +396,13 @@ class Zepher
             }
         }
 
+        // Add dev features
+        if (isset($this->devConfig['features_add'])) {
+            if (in_array('*', $this->devConfig['features_add']) || in_array($feature, $this->devConfig['features_add'])) {
+                $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features'][] = $feature;
+            }
+        }
+
         if (in_array($feature, $this->config['data']['versions'][$this->accessValueObject->getVersionId()]['features']??[])) {
 
             // Application logic requiring non-existent features may error.
