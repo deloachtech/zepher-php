@@ -138,8 +138,19 @@ class Zepher
 
 
     /**
+     * Returns an array of all domains in the object file.
+     * @return array
+     */
+    public function getDomains(): array
+    {
+        return $this->config['data']['domains'];
+    }
+
+
+    /**
      * Returns an array of versions for current domain (or the domain id provided).
      *
+     * @param string|null $domainId
      * @return array
      */
     public function getDomainVersions(string $domainId = null): array
@@ -255,6 +266,7 @@ class Zepher
     /**
      * Returns domain data for the current domain (or the domain id provided).
      *
+     * @param string|null $domainId
      * @return array
      */
     public function getDomain(string $domainId = null): array
@@ -269,6 +281,7 @@ class Zepher
     /**
      * Returns the network of the current domain  (or the domain id provided).
      *
+     * @param string|null $domainId
      * @return array
      */
     public function getDomainNetwork(string $domainId = null): array
@@ -279,7 +292,8 @@ class Zepher
 
             $domains[$id] = [
                 'id' => $id,
-                'title' => $this->config['data']['domains'][$id]['title']
+                'title' => $this->config['data']['domains'][$id]['title'],
+                'desc' => $this->config['data']['domains'][$id]['desc']
             ];
         }
 
