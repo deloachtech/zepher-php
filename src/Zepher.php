@@ -272,7 +272,7 @@ class Zepher
     public function getDomain(string $domainId = null): array
     {
         if ($data = $this->config['data']['domains'][$domainId ?? $this->domainId] ?? []) {
-            return [$domainId => $data];
+            return [$domainId ?? $this->domainId => $data];
         }
         return [];
     }
